@@ -12,6 +12,9 @@
 		75F3F0711F311D4A00A3EC4A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F06F1F311D4A00A3EC4A /* Main.storyboard */; };
 		75F3F0731F311D4A00A3EC4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F0721F311D4A00A3EC4A /* Assets.xcassets */; };
 		75F3F0761F311D4A00A3EC4A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F0741F311D4A00A3EC4A /* LaunchScreen.storyboard */; };
+		75F3F0801F311E9F00A3EC4A /* MetalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F07F1F311E9F00A3EC4A /* MetalDevice.swift */; };
+		75F3F0821F31AE8D00A3EC4A /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F0811F31AE8D00A3EC4A /* Shaders.metal */; };
+		75F3F0841F31AF2E00A3EC4A /* ComputeShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F0831F31AF2E00A3EC4A /* ComputeShader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +25,10 @@
 		75F3F0721F311D4A00A3EC4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75F3F0751F311D4A00A3EC4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		75F3F0771F311D4A00A3EC4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		75F3F07E1F311D7800A3EC4A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		75F3F07F1F311E9F00A3EC4A /* MetalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MetalDevice.swift; path = "../../../My Libraries/MetalImage/Shared/MetalDevice.swift"; sourceTree = "<group>"; };
+		75F3F0811F31AE8D00A3EC4A /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		75F3F0831F31AF2E00A3EC4A /* ComputeShader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ComputeShader.swift; path = "../../../My Libraries/MetalImage/MetalImage/ComputeShader.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +47,7 @@
 			children = (
 				75F3F06A1F311D4A00A3EC4A /* FluidDynamicsMetal */,
 				75F3F0691F311D4A00A3EC4A /* Products */,
+				75F3F07D1F311D7800A3EC4A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -56,12 +64,23 @@
 			children = (
 				75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */,
 				75F3F06D1F311D4A00A3EC4A /* ViewController.swift */,
+				75F3F07F1F311E9F00A3EC4A /* MetalDevice.swift */,
+				75F3F0831F31AF2E00A3EC4A /* ComputeShader.swift */,
 				75F3F06F1F311D4A00A3EC4A /* Main.storyboard */,
 				75F3F0721F311D4A00A3EC4A /* Assets.xcassets */,
 				75F3F0741F311D4A00A3EC4A /* LaunchScreen.storyboard */,
 				75F3F0771F311D4A00A3EC4A /* Info.plist */,
+				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
 			);
 			path = FluidDynamicsMetal;
+			sourceTree = "<group>";
+		};
+		75F3F07D1F311D7800A3EC4A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				75F3F07E1F311D7800A3EC4A /* MetalKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,8 +154,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75F3F0841F31AF2E00A3EC4A /* ComputeShader.swift in Sources */,
+				75F3F0821F31AE8D00A3EC4A /* Shaders.metal in Sources */,
 				75F3F06E1F311D4A00A3EC4A /* ViewController.swift in Sources */,
 				75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */,
+				75F3F0801F311E9F00A3EC4A /* MetalDevice.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,7 +230,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -257,7 +279,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -271,6 +293,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = SC5NQW88NN;
 				INFOPLIST_FILE = FluidDynamicsMetal/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ro.andreisergiupitis.FluidDynamicsMetal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -285,6 +308,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = SC5NQW88NN;
 				INFOPLIST_FILE = FluidDynamicsMetal/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ro.andreisergiupitis.FluidDynamicsMetal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -312,6 +336,7 @@
 				75F3F07C1F311D4B00A3EC4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

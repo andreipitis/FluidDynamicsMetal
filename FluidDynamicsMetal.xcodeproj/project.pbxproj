@@ -66,11 +66,11 @@
 				75F3F06D1F311D4A00A3EC4A /* ViewController.swift */,
 				75F3F07F1F311E9F00A3EC4A /* MetalDevice.swift */,
 				75F3F0831F31AF2E00A3EC4A /* ComputeShader.swift */,
+				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
 				75F3F06F1F311D4A00A3EC4A /* Main.storyboard */,
 				75F3F0721F311D4A00A3EC4A /* Assets.xcassets */,
 				75F3F0741F311D4A00A3EC4A /* LaunchScreen.storyboard */,
 				75F3F0771F311D4A00A3EC4A /* Info.plist */,
-				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
 			);
 			path = FluidDynamicsMetal;
 			sourceTree = "<group>";

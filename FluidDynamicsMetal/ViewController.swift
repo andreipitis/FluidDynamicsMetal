@@ -20,40 +20,51 @@ class ViewController: UIViewController {
         return view as! MTKView
     }
 
+    var width: Int {
+        return Int(metalView.bounds.width)
+    }
+
+    var height: Int {
+        return Int(metalView.bounds.height)
+    }
+
     var isPaused: Bool = false
 
-    private var basicFilter: ComputeShader!
+    private var computeShader: ComputeShader!
+    private var renderShader: RenderShader!
 
     private var staticBuffer: MTLBuffer!
 
     var initialTouchPosition: CGPoint?
     var touchDirection: CGPoint?
 
-    var inputTexture: MTLTexture!
+    var velocity: Slab!
+    var pressure: Slab!
 
-    private let scale = UIScreen.main.scale
+    private let vertexBuffer = MetalDevice.sharedInstance.buffer(array: vertexData)
+    private let textureBuffer = MetalDevice.sharedInstance.buffer(array: TextureRotation.none.rotation())
+
+    private let semaphore = DispatchSemaphore(value: 3)
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         metalView.device = MetalDevice.sharedInstance.device
         metalView.colorPixelFormat = .bgra8Unorm
-        metalView.framebufferOnly = false
+        metalView.framebufferOnly = true
         metalView.preferredFramesPerSecond = 60
         metalView.delegate = self
 
-        basicFilter = ComputeShader(computeShader: "visualize")
+        print("screenSize = \(metalView.bounds.size)")
+
+        velocity = Slab(width: width, height: height)
+        //        pressure = Slab(width: width, height: height)
+
+        computeShader = ComputeShader(computeShader: "visualize")
+        renderShader = RenderShader(fragmentShader: "fragmentShader", vertexShader: "vertexShader")
 
         let bufferSize = MemoryLayout<StaticData>.size
         staticBuffer = MetalDevice.sharedInstance.device.makeBuffer(length: bufferSize, options: .cpuCacheModeWriteCombined)
-
-        let textureDescriptor = MTLTextureDescriptor()
-        textureDescriptor.pixelFormat = .bgra8Unorm
-        textureDescriptor.usage = .unknown
-        textureDescriptor.width = Int(UIScreen.main.bounds.width * scale)
-        textureDescriptor.height = Int(UIScreen.main.bounds.height * scale)
-
-        inputTexture = MetalDevice.createTexture(descriptor: textureDescriptor)
     }
 
     override func didReceiveMemoryWarning() {
@@ -80,15 +91,30 @@ class ViewController: UIViewController {
 
 extension ViewController: MTKViewDelegate {
     func draw(in view: MTKView) {
+        semaphore.wait()
+
         if let initialTouch = initialTouchPosition, let direction = touchDirection {
             let bufferData = staticBuffer.contents().bindMemory(to: StaticData.self, capacity: 1)
 
-            let pos = float2(x: Float(initialTouch.x * UIScreen.main.scale), y: Float(initialTouch.y * UIScreen.main.scale))
-            let impulse = float2(x: Float(initialTouch.x - direction.x), y: Float(initialTouch.y - direction.y))
+            let pos = float2(x: Float(initialTouch.x) , y: Float(initialTouch.y))
+            let impulse = normalize(float2(x: Float(initialTouch.x - direction.x), y: Float(initialTouch.y - direction.y)))
 
+            if pos.x.isNaN == false && pos.y.isNaN == false && impulse.x.isNaN == false && impulse.y.isNaN == false {
+
+                bufferData.pointee.position = pos
+                bufferData.pointee.impulse = impulse
+
+                print("impulse = \(impulse)")
+
+                memcpy(staticBuffer.contents(), bufferData, MemoryLayout<StaticData>.size)
+            }
+        } else {
+            let bufferData = staticBuffer.contents().bindMemory(to: StaticData.self, capacity: 1)
+
+            let pos = float2(x: 0.0 , y: 0.0)
+            let impulse = float2(x: 0.0, y: 0.0)
             bufferData.pointee.position = pos
             bufferData.pointee.impulse = impulse
-
             memcpy(staticBuffer.contents(), bufferData, MemoryLayout<StaticData>.size)
         }
 
@@ -96,31 +122,31 @@ extension ViewController: MTKViewDelegate {
             let nextTexture = drawable.texture
             let commandBuffer = MetalDevice.sharedInstance.newCommandBuffer()
 
-            basicFilter.calculateWithCommandBuffer(buffer: commandBuffer, configureEncoder: { commandEncoder in
-                commandEncoder.setTexture(self.inputTexture, index: 0)
-                commandEncoder.setTexture(nextTexture, index: 1)
+            computeShader.calculateWithCommandBuffer(buffer: commandBuffer, configureEncoder: { commandEncoder in
+                commandEncoder.setTexture(self.velocity.ping, index: 0)
+                commandEncoder.setTexture(self.velocity.pong, index: 1)
 
                 commandEncoder.setBuffer(self.staticBuffer, offset: 0, index: 0)
 
-                let threadGroupCouts = MTLSize(width: 8, height: 8, depth: 1)
-                let threadGroups = MTLSize(width: nextTexture.width / threadGroupCouts.width, height: nextTexture.height / threadGroupCouts.height, depth: 1)
+                let threadGroupCouts = MTLSize(width: 16, height: 16, depth: 1)
+                let threadGroups = MTLSize(width: self.width / threadGroupCouts.width, height: self.height / threadGroupCouts.height, depth: 1)
                 commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCouts)
             })
 
-//            commandBuffer.addCompletedHandler({ (commandBuffer) in
-//
-//            })
+            velocity.swap()
+            
+            renderShader.calculateWithCommandBuffer(buffer: commandBuffer, texture: nextTexture, configureEncoder: { (commandEncoder) in
+                commandEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
+                commandEncoder.setVertexBuffer(self.textureBuffer, offset: 0, index: 1)
+                commandEncoder.setFragmentTexture(self.velocity.ping, index: 0)
+            })
 
-            let blitEncoder = commandBuffer.makeBlitCommandEncoder()
-            let sourceSize = MTLSizeMake(Int(UIScreen.main.bounds.width * scale), Int(UIScreen.main.bounds.height * scale), 1)
-            let origin = MTLOriginMake(0, 0, 0)
-            blitEncoder.copy(from: nextTexture, sourceSlice: 0, sourceLevel: 0, sourceOrigin: origin, sourceSize: sourceSize, to: inputTexture, destinationSlice: 0, destinationLevel: 0, destinationOrigin: origin)
-            blitEncoder.endEncoding()
+            commandBuffer.addCompletedHandler({ (commandBuffer) in
+                self.semaphore.signal()
+            })
 
             commandBuffer.present(drawable)
             commandBuffer.commit()
-
-//            self.inputTexture = nextTexture
         }
 
         touchDirection = initialTouchPosition

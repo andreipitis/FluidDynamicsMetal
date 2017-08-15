@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7594D4381F434ECE00E4AE27 /* RenderShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4371F434ECE00E4AE27 /* RenderShader.swift */; };
+		7594D43A1F4361F300E4AE27 /* Slab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4391F4361F300E4AE27 /* Slab.swift */; };
 		75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */; };
 		75F3F06E1F311D4A00A3EC4A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F06D1F311D4A00A3EC4A /* ViewController.swift */; };
 		75F3F0711F311D4A00A3EC4A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F06F1F311D4A00A3EC4A /* Main.storyboard */; };
@@ -18,6 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7594D4371F434ECE00E4AE27 /* RenderShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderShader.swift; sourceTree = "<group>"; };
+		7594D4391F4361F300E4AE27 /* Slab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slab.swift; sourceTree = "<group>"; };
 		75F3F0681F311D4A00A3EC4A /* FluidDynamicsMetal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidDynamicsMetal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		75F3F06D1F311D4A00A3EC4A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -63,9 +67,11 @@
 			isa = PBXGroup;
 			children = (
 				75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */,
+				7594D4391F4361F300E4AE27 /* Slab.swift */,
 				75F3F06D1F311D4A00A3EC4A /* ViewController.swift */,
 				75F3F07F1F311E9F00A3EC4A /* MetalDevice.swift */,
 				75F3F0831F31AF2E00A3EC4A /* ComputeShader.swift */,
+				7594D4371F434ECE00E4AE27 /* RenderShader.swift */,
 				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
 				75F3F06F1F311D4A00A3EC4A /* Main.storyboard */,
 				75F3F0721F311D4A00A3EC4A /* Assets.xcassets */,
@@ -156,6 +162,8 @@
 			files = (
 				75F3F0841F31AF2E00A3EC4A /* ComputeShader.swift in Sources */,
 				75F3F0821F31AE8D00A3EC4A /* Shaders.metal in Sources */,
+				7594D4381F434ECE00E4AE27 /* RenderShader.swift in Sources */,
+				7594D43A1F4361F300E4AE27 /* Slab.swift in Sources */,
 				75F3F06E1F311D4A00A3EC4A /* ViewController.swift in Sources */,
 				75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */,
 				75F3F0801F311E9F00A3EC4A /* MetalDevice.swift in Sources */,

@@ -98,13 +98,13 @@ class MetalDevice {
         
         activeCommandBuffer = commandQueue.makeCommandBuffer()
         
-        defaultLibrary = device.newDefaultLibrary()!
+        defaultLibrary = device.makeDefaultLibrary()!
     }
     
     //Convenience methods
     
-    class func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String) throws -> MTLRenderPipelineState {
-        return try self.sharedInstance.createRenderPipeline(vertexFunctionName: vertexFunctionName, fragmentFunctionName: fragmentFunctionName)
+    class func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String, pixelFormat: MTLPixelFormat) throws -> MTLRenderPipelineState {
+        return try self.sharedInstance.createRenderPipeline(vertexFunctionName: vertexFunctionName, fragmentFunctionName: fragmentFunctionName, pixelFormat: pixelFormat)
     }
     
     class func createComputePipeline(computeFunctionName: String) throws -> MTLComputePipelineState {
@@ -130,7 +130,7 @@ class MetalDevice {
         return commandQueue.makeCommandBuffer()
     }
     
-    func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String) throws -> MTLRenderPipelineState {
+    func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String, pixelFormat: MTLPixelFormat) throws -> MTLRenderPipelineState {
         let cacheKey = NSString(string: vertexFunctionName + fragmentFunctionName)
         
         if let pipelineState = pipelineCache.object(forKey: cacheKey) as? MTLRenderPipelineState {
@@ -146,7 +146,7 @@ class MetalDevice {
         }
         
         let pipelineStateDescriptor = MTLRenderPipelineDescriptor()
-        pipelineStateDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        pipelineStateDescriptor.colorAttachments[0].pixelFormat = pixelFormat
         pipelineStateDescriptor.vertexFunction = vertexFunction
         pipelineStateDescriptor.fragmentFunction = fragmentFunction
         

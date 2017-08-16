@@ -82,10 +82,26 @@ class ViewController: UIViewController {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         initialTouchPosition = nil
+
+        let bufferData = staticBuffer.contents().bindMemory(to: StaticData.self, capacity: 1)
+
+        let pos = float2(x: 0.0 , y: 0.0)
+        let impulse = float2(x: 0.0, y: 0.0)
+        bufferData.pointee.position = pos
+        bufferData.pointee.impulse = impulse
+        memcpy(staticBuffer.contents(), bufferData, MemoryLayout<StaticData>.size)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         initialTouchPosition = nil
+
+        let bufferData = staticBuffer.contents().bindMemory(to: StaticData.self, capacity: 1)
+
+        let pos = float2(x: 0.0 , y: 0.0)
+        let impulse = float2(x: 0.0, y: 0.0)
+        bufferData.pointee.position = pos
+        bufferData.pointee.impulse = impulse
+        memcpy(staticBuffer.contents(), bufferData, MemoryLayout<StaticData>.size)
     }
 }
 
@@ -108,14 +124,6 @@ extension ViewController: MTKViewDelegate {
 
                 memcpy(staticBuffer.contents(), bufferData, MemoryLayout<StaticData>.size)
             }
-        } else {
-            let bufferData = staticBuffer.contents().bindMemory(to: StaticData.self, capacity: 1)
-
-            let pos = float2(x: 0.0 , y: 0.0)
-            let impulse = float2(x: 0.0, y: 0.0)
-            bufferData.pointee.position = pos
-            bufferData.pointee.impulse = impulse
-            memcpy(staticBuffer.contents(), bufferData, MemoryLayout<StaticData>.size)
         }
 
         if let drawable = view.currentDrawable {

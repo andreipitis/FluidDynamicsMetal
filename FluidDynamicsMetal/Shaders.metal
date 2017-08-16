@@ -62,21 +62,9 @@ inline float SqDistPointSegment(float2 a, float2 b, float2 c)
 }
 
 inline float2 bilerp(sampler textureSampler, texture2d<float> texture, float2 p) {
-//    float3 c = texture.sample(textureSampler, p).xyz;
-//    float2 d11 = texture.sample(textureSampler, p, int2(0, -1)).xy;
-//    float2 d21 = texture.sample(textureSampler, p, int2(-1, 0)).xy;
-//    float2 d12 = texture.sample(textureSampler, p, int2(0, 1)).xy;
-//    float2 d22 = texture.sample(textureSampler, p, int2(1, 0)).xy;
-//
-//
-//    float v_in = d21.x - d22.x;
-//    float h_in = d11.y - d12.y;
-//    float w = c.z + v_in + h_in;
-//    return mix(w, 1.0f, 0.01f);
-
     float4 ij; // i0, j0, i1, j1
-    ij.xy = floor(p - 1.0) + 0.5;
-    ij.zw = ij.xy + 0.5;
+    ij.xy = floor(p - 0.5) + 0.5;
+    ij.zw = ceil(ij.xy + 1.0);
 
     float4 uv = ij;// / float2(320.0, 568.0).xyxy;
     float2 d11 = texture.sample(textureSampler, uv.xy).xy;
@@ -98,7 +86,7 @@ kernel void visualize(texture2d<float, access::sample> input [[texture(0)]], tex
 
     float2 uv = gidf - input.sample(fluid_sampler, gidf).xy;
 
-    float2 color = 0.98 * bilerp(fluid_sampler, input, uv);
+    float2 color = 0.998 * bilerp(fluid_sampler, input, uv);
 
     //External Forces
     float2 impulse = bufferData->impulse;
@@ -107,6 +95,7 @@ kernel void visualize(texture2d<float, access::sample> input [[texture(0)]], tex
     float dist = sqrt(SqDistPointSegment(location, location, gidf));
     float2 pos = impulse * (1.0f - smoothstep(10.0f, 25.0f, dist));
 
+    //Combination
     float2 value = pos + color;
 
     output.write(float4(value.x, value.y, 0.0, 1.0), gid);

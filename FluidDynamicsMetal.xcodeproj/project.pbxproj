@@ -11,6 +11,7 @@
 		753C095B1F43995300D67F17 /* MetalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753C09581F43988D00D67F17 /* MetalDevice.swift */; };
 		7594D4381F434ECE00E4AE27 /* RenderShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4371F434ECE00E4AE27 /* RenderShader.swift */; };
 		7594D43A1F4361F300E4AE27 /* Slab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4391F4361F300E4AE27 /* Slab.swift */; };
+		75A202DD1F4818C30089F3A7 /* RenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A202DC1F4818C30089F3A7 /* RenderViewController.swift */; };
 		75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */; };
 		75F3F06E1F311D4A00A3EC4A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F06D1F311D4A00A3EC4A /* ViewController.swift */; };
 		75F3F0711F311D4A00A3EC4A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F06F1F311D4A00A3EC4A /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 		753C09591F4398C500D67F17 /* ComputeShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComputeShader.swift; sourceTree = "<group>"; };
 		7594D4371F434ECE00E4AE27 /* RenderShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderShader.swift; sourceTree = "<group>"; };
 		7594D4391F4361F300E4AE27 /* Slab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slab.swift; sourceTree = "<group>"; };
+		75A202DC1F4818C30089F3A7 /* RenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderViewController.swift; sourceTree = "<group>"; };
 		75F3F0681F311D4A00A3EC4A /* FluidDynamicsMetal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidDynamicsMetal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		75F3F06D1F311D4A00A3EC4A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -67,11 +69,12 @@
 			isa = PBXGroup;
 			children = (
 				753C09591F4398C500D67F17 /* ComputeShader.swift */,
+				7594D4371F434ECE00E4AE27 /* RenderShader.swift */,
 				753C09581F43988D00D67F17 /* MetalDevice.swift */,
 				75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */,
 				7594D4391F4361F300E4AE27 /* Slab.swift */,
 				75F3F06D1F311D4A00A3EC4A /* ViewController.swift */,
-				7594D4371F434ECE00E4AE27 /* RenderShader.swift */,
+				75A202DC1F4818C30089F3A7 /* RenderViewController.swift */,
 				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
 				75F3F06F1F311D4A00A3EC4A /* Main.storyboard */,
 				75F3F0721F311D4A00A3EC4A /* Assets.xcassets */,
@@ -164,6 +167,7 @@
 				753C095B1F43995300D67F17 /* MetalDevice.swift in Sources */,
 				75F3F0821F31AE8D00A3EC4A /* Shaders.metal in Sources */,
 				7594D4381F434ECE00E4AE27 /* RenderShader.swift in Sources */,
+				75A202DD1F4818C30089F3A7 /* RenderViewController.swift in Sources */,
 				7594D43A1F4361F300E4AE27 /* Slab.swift in Sources */,
 				75F3F06E1F311D4A00A3EC4A /* ViewController.swift in Sources */,
 				75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */,
@@ -300,11 +304,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = SC5NQW88NN;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = FluidDynamicsMetal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ro.andreisergiupitis.FluidDynamicsMetal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -9,12 +9,12 @@
 import UIKit
 import MetalKit
 
-struct StaticData {
-    var position: float2
-    var impulse: float2
-}
-
 class ViewController: UIViewController {
+
+    struct StaticData {
+        var position: float2
+        var impulse: float2
+    }
 
     var metalView: MTKView {
         return view as! MTKView

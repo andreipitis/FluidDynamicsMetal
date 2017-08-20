@@ -98,7 +98,7 @@ class MetalDevice {
         
         activeCommandBuffer = commandQueue.makeCommandBuffer()
         
-        defaultLibrary = device.makeDefaultLibrary()!
+        defaultLibrary = device.newDefaultLibrary()!
     }
     
     //Convenience methods
@@ -149,6 +149,7 @@ class MetalDevice {
         pipelineStateDescriptor.colorAttachments[0].pixelFormat = pixelFormat
         pipelineStateDescriptor.vertexFunction = vertexFunction
         pipelineStateDescriptor.fragmentFunction = fragmentFunction
+        pipelineStateDescriptor.label = fragmentFunctionName
         
         let pipelineState = try device.makeRenderPipelineState(descriptor: pipelineStateDescriptor)
         

@@ -14,6 +14,10 @@ class ViewController: UIViewController {
     struct StaticData {
         var position: float2
         var impulse: float2
+
+        var placeholder: float2 = float2(0.0, 0.0)
+
+        var screenSize: float2
     }
 
     var metalView: MTKView {
@@ -30,10 +34,10 @@ class ViewController: UIViewController {
 
     var isPaused: Bool = false
 
-    private var computeShader: ComputeShader!
-    private var renderShader: RenderShader!
+    fileprivate var computeShader: ComputeShader!
+    fileprivate var renderShader: RenderShader!
 
-    private var staticBuffer: MTLBuffer!
+    fileprivate var staticBuffer: MTLBuffer!
 
     var initialTouchPosition: CGPoint?
     var touchDirection: CGPoint?
@@ -41,10 +45,10 @@ class ViewController: UIViewController {
     var velocity: Slab!
     var pressure: Slab!
 
-    private let vertexBuffer = MetalDevice.sharedInstance.buffer(array: vertexData)
-    private let textureBuffer = MetalDevice.sharedInstance.buffer(array: TextureRotation.none.rotation())
+    fileprivate let vertexBuffer = MetalDevice.sharedInstance.buffer(array: vertexData)
+    fileprivate let textureBuffer = MetalDevice.sharedInstance.buffer(array: TextureRotation.none.rotation())
 
-    private let semaphore = DispatchSemaphore(value: 3)
+    fileprivate let semaphore = DispatchSemaphore(value: 3)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,10 +65,12 @@ class ViewController: UIViewController {
         //        pressure = Slab(width: width, height: height)
 
         computeShader = ComputeShader(computeShader: "visualize")
-        renderShader = RenderShader(fragmentShader: "fragmentShader", vertexShader: "vertexShader")
+        renderShader = RenderShader(fragmentShader: "visualizeVector", vertexShader: "vertexShader")
 
         let bufferSize = MemoryLayout<StaticData>.size
-        staticBuffer = MetalDevice.sharedInstance.device.makeBuffer(length: bufferSize, options: .cpuCacheModeWriteCombined)
+
+        var staticData = StaticData(position: float2(0.0, 0.0), impulse: float2(0.0, 0.0), placeholder: float2(0.0, 0.0), screenSize: float2(Float(UIScreen.main.bounds.width), Float(UIScreen.main.bounds.height)))
+        staticBuffer = MetalDevice.sharedInstance.device.makeBuffer(bytes: &staticData, length: bufferSize, options: .cpuCacheModeWriteCombined)
     }
 
     override func didReceiveMemoryWarning() {
@@ -131,12 +137,13 @@ extension ViewController: MTKViewDelegate {
             let commandBuffer = MetalDevice.sharedInstance.newCommandBuffer()
 
             computeShader.calculateWithCommandBuffer(buffer: commandBuffer, configureEncoder: { commandEncoder in
-                commandEncoder.setTexture(self.velocity.ping, index: 0)
-                commandEncoder.setTexture(self.velocity.pong, index: 1)
+                commandEncoder.setTexture(self.velocity.ping, at: 0)
+                commandEncoder.setTexture(self.velocity.ping, at: 1)
+                commandEncoder.setTexture(self.velocity.pong, at: 2)
 
-                commandEncoder.setBuffer(self.staticBuffer, offset: 0, index: 0)
+                commandEncoder.setBuffer(self.staticBuffer, offset: 0, at: 0)
 
-                let threadGroupCouts = MTLSize(width: 16, height: 16, depth: 1)
+                let threadGroupCouts = MTLSize(width: 4, height: 4, depth: 1)
                 let threadGroups = MTLSize(width: self.width / threadGroupCouts.width, height: self.height / threadGroupCouts.height, depth: 1)
                 commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCouts)
             })
@@ -144,9 +151,9 @@ extension ViewController: MTKViewDelegate {
             velocity.swap()
             
             renderShader.calculateWithCommandBuffer(buffer: commandBuffer, texture: nextTexture, configureEncoder: { (commandEncoder) in
-                commandEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
-                commandEncoder.setVertexBuffer(self.textureBuffer, offset: 0, index: 1)
-                commandEncoder.setFragmentTexture(self.velocity.ping, index: 0)
+                commandEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
+                commandEncoder.setVertexBuffer(self.textureBuffer, offset: 0, at: 1)
+                commandEncoder.setFragmentTexture(self.velocity.ping, at: 0)
             })
 
             commandBuffer.addCompletedHandler({ (commandBuffer) in

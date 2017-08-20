@@ -46,13 +46,32 @@ class RenderShader {
             let renderPassDescriptor = configureRenderPassDescriptor(texture: texture)
             let renderCommandEncoder = buffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
 
-            renderCommandEncoder.pushDebugGroup("Render Encoder")
+            renderCommandEncoder.pushDebugGroup("Render Encoder \(pipelineState.fragmentShader)")
 
             configureEncoder?(renderCommandEncoder)
 
             renderCommandEncoder.setRenderPipelineState(renderPipelineState)
 
             renderCommandEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+
+            renderCommandEncoder.endEncoding()
+
+            renderCommandEncoder.popDebugGroup()
+        }
+    }
+
+    func calculateWithCommandBuffer(buffer: MTLCommandBuffer, indices: MTLBuffer, count: Int, texture: MTLTexture, configureEncoder: ((_ commandEncoder: MTLRenderCommandEncoder) -> Void)?) {
+        if let renderPipelineState = renderPipelineState {
+            let renderPassDescriptor = configureRenderPassDescriptor(texture: texture)
+            let renderCommandEncoder = buffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
+
+            renderCommandEncoder.pushDebugGroup("Render Encoder \(pipelineState.fragmentShader)")
+
+            configureEncoder?(renderCommandEncoder)
+
+            renderCommandEncoder.setRenderPipelineState(renderPipelineState)
+
+            renderCommandEncoder.drawIndexedPrimitives(type: .triangle, indexCount: count, indexType: .uint16, indexBuffer: indices, indexBufferOffset: 0)
 
             renderCommandEncoder.endEncoding()
 

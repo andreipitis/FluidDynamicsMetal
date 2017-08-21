@@ -34,7 +34,7 @@ class RenderViewController: UIViewController {
         VertexData(position: float2(x: -1.0, y: 1.0), texCoord: float2(x: 0.0, y: 0.0)),
         VertexData(position: float2(x: 1.0, y: 1.0), texCoord: float2(x: 1.0, y: 0.0)),
         ]
-    
+
     static let indices: [UInt16] = [0, 1, 2, 1, 2, 3]
 
 
@@ -344,49 +344,49 @@ class RenderViewController: UIViewController {
 extension RenderViewController: MTKViewDelegate {
     func draw(in view: MTKView) {
         semaphore.wait()
-        if let drawable = view.currentDrawable {
+        let commandBuffer = MetalDevice.sharedInstance.newCommandBuffer()
 
-            let nextTexture = drawable.texture
-            let commandBuffer = MetalDevice.sharedInstance.newCommandBuffer()
+        let dataBuffer = nextBuffer(position: initialTouchPosition ?? .zero, direction: touchDirection ?? .zero)
 
-            let dataBuffer = nextBuffer(position: initialTouchPosition ?? .zero, direction: touchDirection ?? .zero)
+        commandBuffer.addCompletedHandler({ (commandBuffer) in
+            self.semaphore.signal()
+        })
 
-            commandBuffer.addCompletedHandler({ (commandBuffer) in
-                self.semaphore.signal()
-            })
+        advect(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, source: velocity, destination: velocity)
+        advect(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, source: density, destination: density)
 
-            advect(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, source: velocity, destination: velocity)
-            advect(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, source: density, destination: density)
-
-            if let _ = initialTouchPosition, let _ = touchDirection {
-                applyForceVector(commandBuffer: commandBuffer, dataBuffer: dataBuffer, destination: velocity)
-                applyForceScalar(commandBuffer: commandBuffer, dataBuffer: dataBuffer, destination: density)
-            }
-
-            computeVorticity(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, destination: velocityVorticity)
-            computeVorticityConfinement(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, vorticity: velocityVorticity, destination: velocity)
-
-            computeDivergence(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, destination: velocityDivergence)
-
-            for _ in 0..<60 {
-                computePressure(commandBuffer: commandBuffer, dataBuffer: dataBuffer, x: pressure, b: velocityDivergence, destination: pressure)
-            }
-
-            subtractGradient(commandBuffer: commandBuffer, dataBuffer: dataBuffer, p: pressure, w: velocity, destination: velocity)
-
-
-            render(commandBuffer: commandBuffer, destination: nextTexture)
-
-            commandBuffer.present(drawable)
-            commandBuffer.commit()
+        if let _ = initialTouchPosition, let _ = touchDirection {
+            applyForceVector(commandBuffer: commandBuffer, dataBuffer: dataBuffer, destination: velocity)
+            applyForceScalar(commandBuffer: commandBuffer, dataBuffer: dataBuffer, destination: density)
         }
 
+        computeVorticity(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, destination: velocityVorticity)
+        computeVorticityConfinement(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, vorticity: velocityVorticity, destination: velocity)
+
+        computeDivergence(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, destination: velocityDivergence)
+
+        for _ in 0..<60 {
+            computePressure(commandBuffer: commandBuffer, dataBuffer: dataBuffer, x: pressure, b: velocityDivergence, destination: pressure)
+        }
+
+        subtractGradient(commandBuffer: commandBuffer, dataBuffer: dataBuffer, p: pressure, w: velocity, destination: velocity)
+        
+        
+        if let drawable = view.currentDrawable {
+            
+            let nextTexture = drawable.texture
+            render(commandBuffer: commandBuffer, destination: nextTexture)
+            
+            commandBuffer.present(drawable)
+        }
+        commandBuffer.commit()
+        
         if interactive == true {
             touchDirection = initialTouchPosition
         }
     }
-
+    
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-
+        
     }
 }

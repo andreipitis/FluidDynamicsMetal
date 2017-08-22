@@ -13,15 +13,19 @@ class Slab {
     var ping: MTLTexture!
     var pong: MTLTexture!
 
-    init(width: Int, height: Int, format: MTLPixelFormat = .rgba16Float, usage: MTLTextureUsage = .unknown) {
+    init(width: Int, height: Int, format: MTLPixelFormat = .rgba16Float, usage: MTLTextureUsage = .unknown, name: String? = nil) {
         let textureDescriptor = MTLTextureDescriptor()
         textureDescriptor.pixelFormat = format
-        textureDescriptor.usage = usage
+        textureDescriptor.usage = MTLTextureUsage(rawValue: MTLTextureUsage.shaderRead.rawValue | MTLTextureUsage.renderTarget.rawValue)
         textureDescriptor.width = width
         textureDescriptor.height = height
+        textureDescriptor.storageMode = .private
 
         ping = MetalDevice.createTexture(descriptor: textureDescriptor)
         pong = MetalDevice.createTexture(descriptor: textureDescriptor)
+
+        ping.label = name
+        pong.label = name
     }
 
     func swap() {

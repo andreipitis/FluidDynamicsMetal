@@ -60,14 +60,14 @@ class RenderShader {
         }
     }
 
-    func calculateWithCommandBuffer(buffer: MTLCommandBuffer, indices: MTLBuffer, count: Int, texture: MTLTexture, configureEncoder: ((_ commandEncoder: MTLRenderCommandEncoder) -> Void)?) {
+    func calculateWithCommandBuffer(buffer: MTLCommandBuffer, indices: MTLBuffer, count: Int, texture: MTLTexture, configureEncoder: ((_ commandEncoder: MTLRenderCommandEncoder) -> Void)) {
         if let renderPipelineState = renderPipelineState {
             let renderPassDescriptor = configureRenderPassDescriptor(texture: texture)
             let renderCommandEncoder = buffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
 
             renderCommandEncoder.pushDebugGroup("Render Encoder \(pipelineState.fragmentShader)")
 
-            configureEncoder?(renderCommandEncoder)
+            configureEncoder(renderCommandEncoder)
 
             renderCommandEncoder.setRenderPipelineState(renderPipelineState)
 
@@ -82,7 +82,7 @@ class RenderShader {
     private func configureRenderPassDescriptor(texture: MTLTexture?) -> MTLRenderPassDescriptor {
         let renderPassDescriptor = MTLRenderPassDescriptor()
         renderPassDescriptor.colorAttachments[0].texture = texture
-        renderPassDescriptor.colorAttachments[0].loadAction = .clear
+        renderPassDescriptor.colorAttachments[0].loadAction = .dontCare
         renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0)
         renderPassDescriptor.colorAttachments[0].storeAction = .store
 

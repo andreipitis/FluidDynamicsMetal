@@ -60,41 +60,39 @@ class RenderViewController: UIViewController {
         }
     }
 
-    fileprivate var computeShader: ComputeShader!
+    var applyForceVectorShader: RenderShader!
+    var applyForceScalarShader: RenderShader!
+    var advectShader: RenderShader!
+    var divergenceShader: RenderShader!
+    var jacobiShader: RenderShader!
+    var vorticityShader: RenderShader!
+    var vorticityConfinementShader: RenderShader!
+    var gradientShader: RenderShader!
 
-    fileprivate var applyForceVectorShader: RenderShader!
-    fileprivate var applyForceScalarShader: RenderShader!
-    fileprivate var advectShader: RenderShader!
-    fileprivate var divergenceShader: RenderShader!
-    fileprivate var jacobiShader: RenderShader!
-    fileprivate var vorticityShader: RenderShader!
-    fileprivate var vorticityConfinementShader: RenderShader!
-    fileprivate var gradientShader: RenderShader!
+    var renderVector: RenderShader!
+    var renderScalar: RenderShader!
 
-    fileprivate var renderVector: RenderShader!
-    fileprivate var renderScalar: RenderShader!
+    var initialTouchPosition: CGPoint?
+    var touchDirection: CGPoint?
 
-    fileprivate var initialTouchPosition: CGPoint?
-    fileprivate var touchDirection: CGPoint?
+    var velocity: Slab!
+    var density: Slab!
+    var velocityDivergence: Slab!
+    var velocityVorticity: Slab!
+    var pressure: Slab!
 
-    fileprivate var velocity: Slab!
-    fileprivate var density: Slab!
-    fileprivate var velocityDivergence: Slab!
-    fileprivate var velocityVorticity: Slab!
-    fileprivate var pressure: Slab!
+    let vertData = MetalDevice.sharedInstance.buffer(array: RenderViewController.vertexData, storageMode: [MTLResourceOptions.storageModeShared])
+    let indexData = MetalDevice.sharedInstance.buffer(array: indices, storageMode: [MTLResourceOptions.storageModeShared])
 
-    fileprivate let vertData = MetalDevice.sharedInstance.buffer(array: RenderViewController.vertexData)
-    fileprivate let indexData = MetalDevice.sharedInstance.buffer(array: indices)
+    let inflightBuffersCount: Int = 3
+    var uniformsBuffers: [MTLBuffer] = []
+    var avaliableBufferIndex: Int = 0
 
-    fileprivate let inflightBuffersCount: Int = 3
-    fileprivate var uniformsBuffers: [MTLBuffer] = []
-    fileprivate var avaliableBufferIndex: Int = 0
+    let semaphore = DispatchSemaphore(value: 3)
 
-    fileprivate let semaphore = DispatchSemaphore(value: 3)
+    var currentIndex = 0
 
-    fileprivate var currentIndex = 0
-
-    fileprivate var interactive: Bool = false
+    var interactive: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,13 +107,11 @@ class RenderViewController: UIViewController {
 
         print("screenSize = \(metalView.bounds.size)")
 
-        velocity = Slab(width: width, height: height)
-        density = Slab(width: width, height: height)
-        velocityDivergence = Slab(width: width, height: height)
-        velocityVorticity = Slab(width: width, height: height)
-        pressure = Slab(width: width, height: height)
-
-        computeShader = ComputeShader(computeShader: "visualize")
+        velocity = Slab(width: width, height: height, name: "Velocity")
+        density = Slab(width: width, height: height, name: "Density")
+        velocityDivergence = Slab(width: width, height: height, name: "Divergence")
+        velocityVorticity = Slab(width: width, height: height, name: "Vorticity")
+        pressure = Slab(width: width, height: height, name: "Pressure")
 
         applyForceVectorShader = RenderShader(fragmentShader: "applyForceVector", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
         applyForceScalarShader = RenderShader(fragmentShader: "applyForceScalar", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
@@ -201,7 +197,7 @@ class RenderViewController: UIViewController {
         isPaused = false
     }
 
-    fileprivate func drawSlab() -> Slab {
+    func drawSlab() -> Slab {
         switch currentIndex {
         case 1:
             return pressure
@@ -320,7 +316,7 @@ class RenderViewController: UIViewController {
         }
     }
 
-    fileprivate func nextBuffer(position: CGPoint, direction: CGPoint) -> MTLBuffer {
+    func nextBuffer(position: CGPoint, direction: CGPoint) -> MTLBuffer {
         let buffer = uniformsBuffers[avaliableBufferIndex]
 
 

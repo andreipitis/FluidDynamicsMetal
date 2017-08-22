@@ -9,69 +9,6 @@
 import Foundation
 import Metal
 
-enum TextureRotation {
-    case none
-    case left
-    case right
-    case flipVertical
-    case flipHorizontal
-
-    func rotation() -> [Float] {
-        switch self {
-        case .none:
-            return [
-                0.0, 1.0,
-                1.0, 1.0,
-                0.0, 0.0,
-
-                1.0, 1.0,
-                0.0, 0.0,
-                1.0, 0.0
-            ]
-        case .left:
-            return [
-                1.0, 0.0,
-                1.0, 1.0,
-                0.0, 0.0,
-
-                1.0, 1.0,
-                0.0, 0.0,
-                0.0, 1.0
-            ]
-        case .right:
-            return [
-                0.0, 1.0,
-                0.0, 0.0,
-                1.0, 1.0,
-
-                0.0, 0.0,
-                1.0, 1.0,
-                1.0, 0.0
-            ]
-        case .flipVertical:
-            return [
-                0.0, 0.0,
-                1.0, 0.0,
-                0.0, 1.0,
-
-                1.0, 0.0,
-                0.0, 1.0,
-                1.0, 1.0
-            ]
-        case .flipHorizontal:
-            return [
-                1.0, 0.0,
-                0.0, 0.0,
-                1.0, 1.0,
-
-                0.0, 0.0,
-                1.0, 1.0,
-                0.0, 1.0
-            ]
-        }
-    }
-}
-
 enum MetalDeviceError: Error {
     case failedToCreateFunction(name: String)
 }
@@ -121,9 +58,9 @@ class MetalDevice {
         outputTexture = texture
     }
     
-    func buffer<T>(array: Array<T>) -> MTLBuffer {
+    func buffer<T>(array: Array<T>, storageMode: MTLResourceOptions = []) -> MTLBuffer {
         let size = array.count * MemoryLayout.size(ofValue: array[0])
-        return device.makeBuffer(bytes: array, length: size, options: [])
+        return device.makeBuffer(bytes: array, length: size, options: storageMode)
     }
     
     func newCommandBuffer() -> MTLCommandBuffer {

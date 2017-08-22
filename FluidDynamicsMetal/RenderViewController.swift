@@ -14,6 +14,8 @@ import MetalKit
 
 class RenderViewController: UIViewController {
 
+    static let screenScaleAdjustment: Float = 1.0
+
     struct StaticData {
         var position: float2
         var impulse: float2
@@ -43,11 +45,11 @@ class RenderViewController: UIViewController {
     }
 
     var width: Int {
-        return Int(metalView.bounds.width)
+        return Int(Float(metalView.bounds.width) / RenderViewController.screenScaleAdjustment)
     }
 
     var height: Int {
-        return Int(metalView.bounds.height)
+        return Int(Float(metalView.bounds.height) / RenderViewController.screenScaleAdjustment)
     }
 
     var isPaused: Bool {
@@ -107,27 +109,27 @@ class RenderViewController: UIViewController {
 
         print("screenSize = \(metalView.bounds.size)")
 
-        velocity = Slab(width: width, height: height, name: "Velocity")
-        density = Slab(width: width, height: height, name: "Density")
-        velocityDivergence = Slab(width: width, height: height, name: "Divergence")
-        velocityVorticity = Slab(width: width, height: height, name: "Vorticity")
-        pressure = Slab(width: width, height: height, name: "Pressure")
+        velocity = Slab(width: width, height: height, format: .rg16Float, name: "Velocity")
+        density = Slab(width: width, height: height, format: .rg16Float, name: "Density")
+        velocityDivergence = Slab(width: width, height: height, format: .rg16Float, name: "Divergence")
+        velocityVorticity = Slab(width: width, height: height, format: .rg16Float, name: "Vorticity")
+        pressure = Slab(width: width, height: height, format: .rg16Float, name: "Pressure")
 
-        applyForceVectorShader = RenderShader(fragmentShader: "applyForceVector", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
-        applyForceScalarShader = RenderShader(fragmentShader: "applyForceScalar", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
-        advectShader = RenderShader(fragmentShader: "advect", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
-        divergenceShader = RenderShader(fragmentShader: "divergence", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
-        jacobiShader = RenderShader(fragmentShader: "jacobi", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
-        vorticityShader = RenderShader(fragmentShader: "vorticity", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
-        vorticityConfinementShader = RenderShader(fragmentShader: "vorticityConfinement", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
-        gradientShader = RenderShader(fragmentShader: "gradient", vertexShader: "vertexShader", pixelFormat: .rgba16Float)
+        applyForceVectorShader = RenderShader(fragmentShader: "applyForceVector", vertexShader: "vertexShader", pixelFormat: .rg16Float)
+        applyForceScalarShader = RenderShader(fragmentShader: "applyForceScalar", vertexShader: "vertexShader", pixelFormat: .rg16Float)
+        advectShader = RenderShader(fragmentShader: "advect", vertexShader: "vertexShader", pixelFormat: .rg16Float)
+        divergenceShader = RenderShader(fragmentShader: "divergence", vertexShader: "vertexShader", pixelFormat: .rg16Float)
+        jacobiShader = RenderShader(fragmentShader: "jacobi", vertexShader: "vertexShader", pixelFormat: .rg16Float)
+        vorticityShader = RenderShader(fragmentShader: "vorticity", vertexShader: "vertexShader", pixelFormat: .rg16Float)
+        vorticityConfinementShader = RenderShader(fragmentShader: "vorticityConfinement", vertexShader: "vertexShader", pixelFormat: .rg16Float)
+        gradientShader = RenderShader(fragmentShader: "gradient", vertexShader: "vertexShader", pixelFormat: .rg16Float)
 
         renderVector = RenderShader(fragmentShader: "visualizeVector", vertexShader: "vertexShader")
         renderScalar = RenderShader(fragmentShader: "visualizeScalar", vertexShader: "vertexShader")
 
         let bufferSize = MemoryLayout<StaticData>.size
 
-        var staticData = StaticData(position: float2(0.0, 0.0), impulse: float2(0.0, 0.0), impulseScalar: float2(0.0, 0.0), offsets: float2(1.0/Float(UIScreen.main.bounds.width), 1.0/Float(UIScreen.main.bounds.height)), screenSize: float2(Float(UIScreen.main.bounds.width), Float(UIScreen.main.bounds.height)))
+        var staticData = StaticData(position: float2(0.0, 0.0), impulse: float2(0.0, 0.0), impulseScalar: float2(0.0, 0.0), offsets: float2(1.0/Float(width), 1.0/Float(height)), screenSize: float2(Float(width), Float(height)))
 
         for _ in 0..<inflightBuffersCount {
             let buffer = MetalDevice.sharedInstance.device.makeBuffer(bytes: &staticData, length: bufferSize, options: .storageModeShared)
@@ -158,6 +160,10 @@ class RenderViewController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
 
@@ -185,19 +191,19 @@ class RenderViewController: UIViewController {
         currentIndex = (currentIndex + 1) % 4
     }
 
-    @objc func doubleTap() {
+    @objc final func doubleTap() {
         isPaused = !isPaused
     }
 
-    @objc func willResignActive() {
+    @objc final func willResignActive() {
         isPaused = true
     }
 
-    @objc func didBecomeActive() {
+    @objc final func didBecomeActive() {
         isPaused = false
     }
 
-    func drawSlab() -> Slab {
+    final func drawSlab() -> Slab {
         switch currentIndex {
         case 1:
             return pressure
@@ -210,7 +216,7 @@ class RenderViewController: UIViewController {
         }
     }
 
-    func advect(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, source: Slab, destination: Slab) {
+    final func advect(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, source: Slab, destination: Slab) {
         advectShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(velocity.ping, at: 0)
@@ -222,7 +228,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func applyForceVector(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, destination: Slab) {
+    final func applyForceVector(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, destination: Slab) {
         applyForceVectorShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(destination.ping, at: 0)
@@ -233,7 +239,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func applyForceScalar(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, destination: Slab) {
+    final func applyForceScalar(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, destination: Slab) {
         applyForceScalarShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(destination.ping, at: 0)
@@ -244,7 +250,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func computeDivergence(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, destination: Slab) {
+    final func computeDivergence(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, destination: Slab) {
         divergenceShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(velocity.ping, at: 0)
@@ -255,7 +261,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func computePressure(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, x: Slab, b: Slab, destination: Slab) {
+    final func computePressure(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, x: Slab, b: Slab, destination: Slab) {
         jacobiShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(x.ping, at: 0)
@@ -267,7 +273,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func computeVorticity(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, destination: Slab) {
+    final func computeVorticity(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, destination: Slab) {
         vorticityShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(velocity.ping, at: 0)
@@ -278,7 +284,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func computeVorticityConfinement(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, vorticity: Slab, destination: Slab) {
+    final func computeVorticityConfinement(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, vorticity: Slab, destination: Slab) {
         vorticityConfinementShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(velocity.ping, at: 0)
@@ -290,7 +296,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func subtractGradient(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, p: Slab, w: Slab, destination: Slab) {
+    final func subtractGradient(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, p: Slab, w: Slab, destination: Slab) {
         gradientShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
             commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
             commandEncoder.setFragmentTexture(p.ping, at: 0)
@@ -302,7 +308,7 @@ class RenderViewController: UIViewController {
         destination.swap()
     }
 
-    func render(commandBuffer: MTLCommandBuffer, destination: MTLTexture) {
+    final func render(commandBuffer: MTLCommandBuffer, destination: MTLTexture) {
         if currentIndex >= 2 {
             renderVector.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination) { (commandEncoder) in
                 commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
@@ -316,14 +322,14 @@ class RenderViewController: UIViewController {
         }
     }
 
-    func nextBuffer(position: CGPoint, direction: CGPoint) -> MTLBuffer {
+    final func nextBuffer(position: CGPoint, direction: CGPoint) -> MTLBuffer {
         let buffer = uniformsBuffers[avaliableBufferIndex]
 
 
         let bufferData = buffer.contents().bindMemory(to: StaticData.self, capacity: 1)
 
-        let pos = float2(x: Float(position.x) , y: Float(position.y))
-        let impulse = float2(x: Float(position.x - direction.x), y: Float(position.y - direction.y))
+        let pos = float2(x: Float(position.x) / RenderViewController.screenScaleAdjustment , y: Float(position.y) / RenderViewController.screenScaleAdjustment)
+        let impulse = float2(x: Float(position.x - direction.x) / RenderViewController.screenScaleAdjustment, y: Float(position.y - direction.y)  / RenderViewController.screenScaleAdjustment)
 
         if pos.x.isNaN == false && pos.y.isNaN == false && impulse.x.isNaN == false && impulse.y.isNaN == false {
 
@@ -375,6 +381,7 @@ extension RenderViewController: MTKViewDelegate {
             
             commandBuffer.present(drawable)
         }
+
         commandBuffer.commit()
         
         if interactive == true {

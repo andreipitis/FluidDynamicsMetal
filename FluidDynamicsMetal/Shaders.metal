@@ -230,6 +230,25 @@ fragment half4 vorticityConfinement(VertexOut fragmentIn [[stage_in]], texture2d
     float2 gridValue = uv * screenSize;
     if(gridValue.x <= 1 || gridValue.y <= 1 || gridValue.x >= screenSize.x - 1 || gridValue.y >= screenSize.y - 1) {
         result = float2(0.0);
+
+//        float2 texCoord = gridValue;
+//        if(gridValue.x <= 1) {
+//            texCoord.x = gridValue.x + 1;
+//        }
+//
+//        if(gridValue.y <= 1) {
+//            texCoord.y = gridValue.y + 1;
+//        }
+//
+//        if(gridValue.x >= screenSize.x - 1) {
+//            texCoord.x = gridValue.x - 1;
+//        }
+//
+//        if(gridValue.y >= screenSize.y - 1) {
+//            texCoord.y = gridValue.y - 1;
+//        }
+//
+//        result = -velocity.sample(fluid_sampler, texCoord / screenSize).xy;
     }
 
     return half4(result.x, result.y, 0.0, 1.0);
@@ -266,6 +285,24 @@ fragment half4 gradient(VertexOut fragmentIn [[stage_in]], texture2d<float, acce
 
     if(gridValue.x <= 1 || gridValue.y <= 1 || gridValue.x >= screenSize.x - 1 || gridValue.y >= screenSize.y - 1) {
         result = float2(0.0);
+//        float2 texCoord = gridValue;
+//        if(gridValue.x <= 1) {
+//            texCoord.x = gridValue.x + 1;
+//        }
+//
+//        if(gridValue.y <= 1) {
+//            texCoord.y = gridValue.y + 1;
+//        }
+//
+//        if(gridValue.x >= screenSize.x - 1) {
+//            texCoord.x = gridValue.x - 1;
+//        }
+//
+//        if(gridValue.y >= screenSize.y - 1) {
+//            texCoord.y = gridValue.y - 1;
+//        }
+//
+//        result = -w.sample(fluid_sampler, texCoord / screenSize).xy;
     }
     return half4(result.x, result.y, 0.0, 1.0);
 }

@@ -41,7 +41,7 @@ class RenderShader {
         print("Deinit Filter")
     }
 
-    func calculateWithCommandBuffer(buffer: MTLCommandBuffer, texture: MTLTexture, configureEncoder: ((_ commandEncoder: MTLRenderCommandEncoder) -> Void)?) {
+    final func calculateWithCommandBuffer(buffer: MTLCommandBuffer, texture: MTLTexture, configureEncoder: ((_ commandEncoder: MTLRenderCommandEncoder) -> Void)?) {
         if let renderPipelineState = renderPipelineState {
             let renderPassDescriptor = configureRenderPassDescriptor(texture: texture)
             let renderCommandEncoder = buffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
@@ -60,7 +60,7 @@ class RenderShader {
         }
     }
 
-    func calculateWithCommandBuffer(buffer: MTLCommandBuffer, indices: MTLBuffer, count: Int, texture: MTLTexture, configureEncoder: ((_ commandEncoder: MTLRenderCommandEncoder) -> Void)) {
+    final func calculateWithCommandBuffer(buffer: MTLCommandBuffer, indices: MTLBuffer, count: Int, texture: MTLTexture, configureEncoder: ((_ commandEncoder: MTLRenderCommandEncoder) -> Void)) {
         if let renderPipelineState = renderPipelineState {
             let renderPassDescriptor = configureRenderPassDescriptor(texture: texture)
             let renderCommandEncoder = buffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)

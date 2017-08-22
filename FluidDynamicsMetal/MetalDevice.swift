@@ -40,34 +40,34 @@ class MetalDevice {
     
     //Convenience methods
     
-    class func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String, pixelFormat: MTLPixelFormat) throws -> MTLRenderPipelineState {
+    final class func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String, pixelFormat: MTLPixelFormat) throws -> MTLRenderPipelineState {
         return try self.sharedInstance.createRenderPipeline(vertexFunctionName: vertexFunctionName, fragmentFunctionName: fragmentFunctionName, pixelFormat: pixelFormat)
     }
     
-    class func createComputePipeline(computeFunctionName: String) throws -> MTLComputePipelineState {
+    final class func createComputePipeline(computeFunctionName: String) throws -> MTLComputePipelineState {
         return try self.sharedInstance.createComputePipeline(computeFunctionName: computeFunctionName)
     }
     
-    class func createTexture(descriptor: MTLTextureDescriptor) -> MTLTexture {
+    final class func createTexture(descriptor: MTLTextureDescriptor) -> MTLTexture {
         return self.sharedInstance.device.makeTexture(descriptor: descriptor)
     }
     
-    func swapBuffers() {
+    final func swapBuffers() {
         let texture = inputTexture
         inputTexture = outputTexture
         outputTexture = texture
     }
     
-    func buffer<T>(array: Array<T>, storageMode: MTLResourceOptions = []) -> MTLBuffer {
+    final func buffer<T>(array: Array<T>, storageMode: MTLResourceOptions = []) -> MTLBuffer {
         let size = array.count * MemoryLayout.size(ofValue: array[0])
         return device.makeBuffer(bytes: array, length: size, options: storageMode)
     }
     
-    func newCommandBuffer() -> MTLCommandBuffer {
+    final func newCommandBuffer() -> MTLCommandBuffer {
         return commandQueue.makeCommandBuffer()
     }
     
-    func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String, pixelFormat: MTLPixelFormat) throws -> MTLRenderPipelineState {
+    final func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String, pixelFormat: MTLPixelFormat) throws -> MTLRenderPipelineState {
         let cacheKey = NSString(string: vertexFunctionName + fragmentFunctionName)
         
         if let pipelineState = pipelineCache.object(forKey: cacheKey) as? MTLRenderPipelineState {
@@ -95,7 +95,7 @@ class MetalDevice {
         return pipelineState
     }
     
-    func createComputePipeline(computeFunctionName: String) throws -> MTLComputePipelineState {
+    final func createComputePipeline(computeFunctionName: String) throws -> MTLComputePipelineState {
         let cacheKey = NSString(string: computeFunctionName)
         
         if let pipelineState = pipelineCache.object(forKey: cacheKey) as? MTLComputePipelineState {

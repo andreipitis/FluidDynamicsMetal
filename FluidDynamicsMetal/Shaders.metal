@@ -10,8 +10,8 @@
 using namespace metal;
 
 struct VertexIn {
-    float2 position [[ attribute(0) ]];
-    float2 textureCoorinates [[ attribute(1) ]];
+    float2 position [[attribute(0)]];
+    float2 textureCoorinates [[attribute(1)]];
 };
 
 struct VertexOut {
@@ -20,7 +20,7 @@ struct VertexOut {
 };
 
 //Render to screen
-vertex VertexOut vertexShader(const device VertexIn* vertexArray [[ buffer(0) ]], unsigned int vid [[ vertex_id ]]) {
+vertex VertexOut vertexShader(constant VertexIn* vertexArray [[buffer(0)]], unsigned int vid [[vertex_id]]) {
 
     VertexIn vertexData = vertexArray[vid];
     VertexOut vertexDataOut;
@@ -78,12 +78,12 @@ inline half gauss(half2 p, half r)
     return exp(-dot(p, p) / r);
 }
 
-fragment half4 applyForceVector(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> input [[texture(0)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 applyForceVector(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> input [[texture(0)]], constant BufferData &bufferData [[buffer(0)]]) {
     constexpr sampler fluid_sampler(filter::nearest);
 
-    half2 impulse = half2(bufferData->impulse);
-    half2 location = half2(bufferData->position);
-    half2 screenSize = half2(bufferData->screenSize);
+    half2 impulse = half2(bufferData.impulse);
+    half2 location = half2(bufferData.position);
+    half2 screenSize = half2(bufferData.screenSize);
 
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
 
@@ -91,15 +91,15 @@ fragment half4 applyForceVector(VertexOut fragmentIn [[stage_in]], texture2d<flo
     half2 splat = impulse * gauss(coords, 150.0);
 
     half2 final = splat + color;
-    return half4(final.x, final.y, 0.0, 1.0);
+    return final;
 }
 
-fragment half4 applyForceScalar(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> input [[texture(0)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 applyForceScalar(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> input [[texture(0)]], constant BufferData &bufferData [[buffer(0)]]) {
     constexpr sampler fluid_sampler(filter::nearest);
 
-    half2 impulseScalar = half2(bufferData->impulseScalar);
-    half2 location = half2(bufferData->position);
-    half2 screenSize = half2(bufferData->screenSize);
+    half2 impulseScalar = half2(bufferData.impulseScalar);
+    half2 location = half2(bufferData.position);
+    half2 screenSize = half2(bufferData.screenSize);
 
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
 
@@ -107,29 +107,29 @@ fragment half4 applyForceScalar(VertexOut fragmentIn [[stage_in]], texture2d<flo
     half2 splat = impulseScalar * gauss(coords, 150.0);
 
     half2 final = splat + color;
-    return half4(final.x, final.y, 0.0, 1.0);
+    return final;
 }
 
-fragment half4 advect(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], texture2d<float, access::sample> advected [[texture(1)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 advect(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], texture2d<float, access::sample> advected [[texture(1)]], constant BufferData &bufferData [[buffer(0)]]) {
 
     constexpr sampler fluid_sampler(filter::nearest);
 
-    float2 screenSize = bufferData->screenSize;
+    float2 screenSize = bufferData.screenSize;
 
     float2 uv = (fragmentIn.textureCoorinates * screenSize) - velocity.sample(fluid_sampler, fragmentIn.textureCoorinates).xy;
 
-    half2 color = 0.998 * half2(bilerpFrag(fluid_sampler, advected, uv, screenSize));
+    half2 color = 0.998h * half2(bilerpFrag(fluid_sampler, advected, uv, screenSize));
 
-    return half4(color.x, color.y, 0.0, 1.0);
+    return color.xy;
 }
 
-fragment half4 divergence(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 divergence(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], constant BufferData &bufferData [[buffer(0)]]) {
 
     constexpr sampler fluid_sampler(filter::nearest);
 
     float2 uv = fragmentIn.textureCoorinates;
 
-    float2 offsets = bufferData->offsets;
+    float2 offsets = bufferData.offsets;
 
     float2 xOffset = float2(offsets.x, 0.0);
     float2 yOffset = float2(0.0, offsets.y);
@@ -142,16 +142,16 @@ fragment half4 divergence(VertexOut fragmentIn [[stage_in]], texture2d<float, ac
     float scale = 0.5;
     float divergence = scale * (vr - vl + vt - vb);
 
-    return half4(divergence, 0.0, 0.0, 1.0);
+    return half2(divergence, 0.0);
 }
 
-fragment half4 jacobi(VertexOut fragmentIn [[stage_in]], texture2d<half, access::sample> x [[texture(0)]], texture2d<half, access::sample> b [[texture(1)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 jacobi(VertexOut fragmentIn [[stage_in]], texture2d<half, access::sample> x [[texture(0)]], texture2d<half, access::sample> b [[texture(1)]], constant BufferData &bufferData [[buffer(0)]]) {
 
     constexpr sampler fluid_sampler(filter::nearest);
 
     float2 uv = fragmentIn.textureCoorinates;
 
-    float2 offsets = bufferData->offsets;
+    float2 offsets = bufferData.offsets;
 
     float2 xOffset = float2(offsets.x, 0.0);
     float2 yOffset = float2(0.0, offsets.y);
@@ -168,16 +168,16 @@ fragment half4 jacobi(VertexOut fragmentIn [[stage_in]], texture2d<half, access:
 
     half result = (xl + xr + xb + xt + alpha * bc) / beta;
 
-    return half4(result, 0.0, 0.0, 1.0);
+    return half2(result, 0.0);
 }
 
-fragment half4 vorticity(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 vorticity(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], constant BufferData &bufferData [[buffer(0)]]) {
 
     constexpr sampler fluid_sampler(filter::nearest);
 
     float2 uv = fragmentIn.textureCoorinates;
 
-    float2 offsets = bufferData->offsets;
+    float2 offsets = bufferData.offsets;
 
     float2 xOffset = float2(offsets.x, 0.0);
     float2 yOffset = float2(0.0, offsets.y);
@@ -189,18 +189,18 @@ fragment half4 vorticity(VertexOut fragmentIn [[stage_in]], texture2d<float, acc
 
     float scale = 0.5;
 
-    return half4(scale * ((vr - vl) - (vt - vb)), 0.0, 0.0, 1.0);
+    return half2(scale * ((vr - vl) - (vt - vb)), 0.0);
 }
 
-fragment half4 vorticityConfinement(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], texture2d<float, access::sample> vorticity [[texture(1)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 vorticityConfinement(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> velocity [[texture(0)]], texture2d<float, access::sample> vorticity [[texture(1)]], constant BufferData &bufferData [[buffer(0)]]) {
 
     constexpr sampler fluid_sampler(filter::nearest);
 
-    float2 screenSize = bufferData->screenSize;
+    float2 screenSize = bufferData.screenSize;
 
     float2 uv = fragmentIn.textureCoorinates;
 
-    float2 offsets = bufferData->offsets;
+    float2 offsets = bufferData.offsets;
 
     float2 xOffset = float2(offsets.x, 0.0);
     float2 yOffset = float2(0.0, offsets.y);
@@ -251,18 +251,18 @@ fragment half4 vorticityConfinement(VertexOut fragmentIn [[stage_in]], texture2d
 //        result = -velocity.sample(fluid_sampler, texCoord / screenSize).xy;
     }
 
-    return half4(result.x, result.y, 0.0, 1.0);
+    return half2(result.x, result.y);
 }
 
-fragment half4 gradient(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> p [[texture(0)]], texture2d<float, access::sample> w [[texture(1)]], constant BufferData *bufferData [[buffer(0)]]) {
+fragment half2 gradient(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> p [[texture(0)]], texture2d<float, access::sample> w [[texture(1)]], constant BufferData &bufferData [[buffer(0)]]) {
 
     constexpr sampler fluid_sampler(filter::nearest);
 
-    float2 screenSize = bufferData->screenSize;
+    float2 screenSize = bufferData.screenSize;
 
     float2 uv = fragmentIn.textureCoorinates;
 
-    float2 offsets = bufferData->offsets;
+    float2 offsets = bufferData.offsets;
 
     float2 xOffset = float2(offsets.x, 0.0);
     float2 yOffset = float2(0.0, offsets.y);
@@ -304,7 +304,7 @@ fragment half4 gradient(VertexOut fragmentIn [[stage_in]], texture2d<float, acce
 //
 //        result = -w.sample(fluid_sampler, texCoord / screenSize).xy;
     }
-    return half4(result.x, result.y, 0.0, 1.0);
+    return half2(result.x, result.y);
 }
 
 
@@ -373,7 +373,7 @@ inline float2 bilerp(sampler textureSampler, texture2d<float> texture, float2 p)
     return mix(mix(d11, d21, a.x), mix(d12, d22, a.x), a.y);
 }
 
-kernel void visualize(texture2d<float, access::sample> velocity [[texture(0)]], texture2d<float, access::sample> advected [[texture(1)]], texture2d<float, access::write> output [[texture(2)]], uint2 gid [[thread_position_in_grid]], constant ComputeBufferData *bufferData [[buffer(0)]]) {
+kernel void visualize(texture2d<float, access::sample> velocity [[texture(0)]], texture2d<float, access::sample> advected [[texture(1)]], texture2d<float, access::write> output [[texture(2)]], uint2 gid [[thread_position_in_grid]], constant ComputeBufferData &bufferData [[buffer(0)]]) {
     float2 gidf = static_cast<float2>(gid);
 
     constexpr sampler fluid_sampler(coord::pixel, filter::nearest, address::clamp_to_edge);
@@ -390,9 +390,9 @@ kernel void visualize(texture2d<float, access::sample> velocity [[texture(0)]], 
     float2 color = 0.998 * bilerp(fluid_sampler, advected, uv);
 
     //External Forces
-    float2 impulse = bufferData->impulse;
+    float2 impulse = bufferData.impulse;
 
-    float2 location = bufferData->position;
+    float2 location = bufferData.position;
     float dist = sqrt(SqDistPointSegment(location, location, gidf));
     float2 pos = impulse * (1.0f - smoothstep(5.0f, 15.0f, dist));
 
@@ -402,7 +402,7 @@ kernel void visualize(texture2d<float, access::sample> velocity [[texture(0)]], 
 
     //Boundary
     float boundaryVal = 0;
-    if(gid.x <= boundaryVal || gid.y <= boundaryVal || gid.x >= bufferData->screenSize.x - boundaryVal || gid.y >= bufferData->screenSize.y - boundaryVal) {
+    if(gid.x <= boundaryVal || gid.y <= boundaryVal || gid.x >= bufferData.screenSize.x - boundaryVal || gid.y >= bufferData.screenSize.y - boundaryVal) {
         value = float3(0.0);
     }
 

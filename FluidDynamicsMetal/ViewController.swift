@@ -45,8 +45,6 @@ class ViewController: UIViewController {
     var velocity: Slab!
     var pressure: Slab!
 
-    fileprivate let vertexBuffer = MetalDevice.sharedInstance.buffer(array: vertexData)
-
     fileprivate let semaphore = DispatchSemaphore(value: 3)
 
     override func viewDidLoad() {
@@ -150,7 +148,7 @@ extension ViewController: MTKViewDelegate {
             velocity.swap()
             
             renderShader.calculateWithCommandBuffer(buffer: commandBuffer, texture: nextTexture, configureEncoder: { (commandEncoder) in
-                commandEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
+//                commandEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
                 commandEncoder.setFragmentTexture(self.velocity.ping, at: 0)
             })
 

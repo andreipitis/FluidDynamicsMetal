@@ -17,16 +17,6 @@ struct PipelineStateConfiguration {
     let computeShader: String
 }
 
-let vertexData: [Float] = [
-    -1.0, -1.0,
-    1.0, -1.0,
-    -1.0, 1.0,
-
-    1.0, -1.0,
-    -1.0, 1.0,
-    1.0, 1.0
-]
-
 class RenderShader {
     private var pipelineState: PipelineStateConfiguration
     private var renderPipelineState: MTLRenderPipelineState?
@@ -69,6 +59,7 @@ class RenderShader {
 
             configureEncoder(renderCommandEncoder)
 
+            renderCommandEncoder.setCullMode(.back)
             renderCommandEncoder.setRenderPipelineState(renderPipelineState)
 
             renderCommandEncoder.drawIndexedPrimitives(type: .triangle, indexCount: count, indexType: .uint16, indexBuffer: indices, indexBufferOffset: 0)

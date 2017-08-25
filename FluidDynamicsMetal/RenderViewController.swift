@@ -37,7 +37,7 @@ class RenderViewController: UIViewController {
         VertexData(position: float2(x: 1.0, y: 1.0), texCoord: float2(x: 1.0, y: 0.0)),
         ]
 
-    static let indices: [UInt16] = [0, 1, 2, 1, 2, 3]
+    static let indices: [UInt16] = [2, 1, 0, 1, 2, 3]
 
 
     var metalView: MTKView {

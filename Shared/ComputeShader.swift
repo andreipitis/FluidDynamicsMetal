@@ -6,7 +6,6 @@
 //  Copyright © 2017 Andrei-Sergiu Pițiș. All rights reserved.
 //
 
-import UIKit
 import CoreMedia
 import Metal
 
@@ -29,9 +28,7 @@ class ComputeShader {
     }
 
     func calculateWithCommandBuffer(buffer: MTLCommandBuffer, configureEncoder: ((_ commandEncoder: MTLComputeCommandEncoder) -> Void)?) {
-        if let computePipelineState = computePipelineState {
-            let computeCommandEncoder = buffer.makeComputeCommandEncoder()
-
+        if let computePipelineState = computePipelineState, let computeCommandEncoder = buffer.makeComputeCommandEncoder() {
             computeCommandEncoder.pushDebugGroup("Base Filter Compute Encoder")
             computeCommandEncoder.setComputePipelineState(computePipelineState)
 

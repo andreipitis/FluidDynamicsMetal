@@ -1,6 +1,6 @@
 //
 //  MetalDevice.swift
-//  MetalImage
+//  FluidDynamicsMetal
 //
 //  Created by Andrei-Sergiu Pițiș on 06/06/2017.
 //  Copyright © 2017 Andrei-Sergiu Pițiș. All rights reserved.
@@ -31,11 +31,11 @@ class MetalDevice {
     
     private init() {
         device = MTLCreateSystemDefaultDevice()!
-        commandQueue = device.makeCommandQueue()
+        commandQueue = device.makeCommandQueue()!
         
-        activeCommandBuffer = commandQueue.makeCommandBuffer()
+        activeCommandBuffer = commandQueue.makeCommandBuffer()!
         
-        defaultLibrary = device.newDefaultLibrary()!
+        defaultLibrary = device.makeDefaultLibrary()!
     }
     
     //Convenience methods
@@ -49,7 +49,7 @@ class MetalDevice {
     }
     
     final class func createTexture(descriptor: MTLTextureDescriptor) -> MTLTexture {
-        return self.sharedInstance.device.makeTexture(descriptor: descriptor)
+        return self.sharedInstance.device.makeTexture(descriptor: descriptor)!
     }
     
     final func swapBuffers() {
@@ -60,11 +60,11 @@ class MetalDevice {
     
     final func buffer<T>(array: Array<T>, storageMode: MTLResourceOptions = []) -> MTLBuffer {
         let size = array.count * MemoryLayout.size(ofValue: array[0])
-        return device.makeBuffer(bytes: array, length: size, options: storageMode)
+        return device.makeBuffer(bytes: array, length: size, options: storageMode)!
     }
     
     final func newCommandBuffer() -> MTLCommandBuffer {
-        return commandQueue.makeCommandBuffer()
+        return commandQueue.makeCommandBuffer()!
     }
     
     final func createRenderPipeline(vertexFunctionName: String = "basicVertexFunction", fragmentFunctionName: String, pixelFormat: MTLPixelFormat) throws -> MTLRenderPipelineState {

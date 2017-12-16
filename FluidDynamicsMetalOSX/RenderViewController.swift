@@ -1,18 +1,19 @@
 //
 //  RenderViewController.swift
-//  FluidDynamicsMetal
+//  FluidDynamicsMetalOSX
 //
-//  Created by Andrei-Sergiu Pițiș on 19/08/2017.
+//  Created by Andrei-Sergiu Pițiș on 16/12/2017.
 //  Copyright © 2017 Andrei-Sergiu Pițiș. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
-import UIKit
+import AppKit
 import MetalKit
 
+let MaxBuffers = 3
 
-class RenderViewController: UIViewController {
+class RenderViewController: NSViewController {
 
     static let screenScaleAdjustment: Float = 1.0
 
@@ -86,18 +87,25 @@ class RenderViewController: UIViewController {
     let vertData = MetalDevice.sharedInstance.buffer(array: RenderViewController.vertexData, storageMode: [MTLResourceOptions.storageModeShared])
     let indexData = MetalDevice.sharedInstance.buffer(array: indices, storageMode: [MTLResourceOptions.storageModeShared])
 
-    let inflightBuffersCount: Int = 3
+    let inflightBuffersCount: Int = MaxBuffers
     var uniformsBuffers: [MTLBuffer] = []
     var avaliableBufferIndex: Int = 0
 
-    let semaphore = DispatchSemaphore(value: 3)
+    let semaphore = DispatchSemaphore(value: MaxBuffers)
 
     var currentIndex = 0
+
+
+    var originalHeight: CGFloat = 0
+    var originalWidth: CGFloat = 0
 
     var interactive: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        originalHeight = CGFloat(height)
+        originalWidth = CGFloat(width)
 
         let currentTime = CACurrentMediaTime()
 
@@ -132,23 +140,10 @@ class RenderViewController: UIViewController {
         var staticData = StaticData(position: float2(0.0, 0.0), impulse: float2(0.0, 0.0), impulseScalar: float2(0.0, 0.0), offsets: float2(1.0/Float(width), 1.0/Float(height)), screenSize: float2(Float(width), Float(height)))
 
         for _ in 0..<inflightBuffersCount {
-            let buffer = MetalDevice.sharedInstance.device.makeBuffer(bytes: &staticData, length: bufferSize, options: .storageModeShared)
+            let buffer = MetalDevice.sharedInstance.device.makeBuffer(bytes: &staticData, length: bufferSize, options: .storageModeShared)!
 
             uniformsBuffers.append(buffer)
         }
-
-        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(doubleTap))
-        doubleTapGesture.numberOfTapsRequired = 2
-        doubleTapGesture.numberOfTouchesRequired = 1
-        view.addGestureRecognizer(doubleTapGesture)
-
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(changeSource))
-        gestureRecognizer.numberOfTapsRequired = 2
-        gestureRecognizer.numberOfTouchesRequired = 2
-        view.addGestureRecognizer(gestureRecognizer)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(willResignActive), name: .UIApplicationWillResignActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .UIApplicationDidBecomeActive, object: nil)
 
         print("Time to start = \(CACurrentMediaTime() - currentTime)")
 
@@ -160,30 +155,17 @@ class RenderViewController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-
-        print("Got Memory Warning")
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func mouseDragged(with event: NSEvent) {
         interactive = true
-        initialTouchPosition = touches.first?.location(in: touches.first?.view)
+        let position = event.locationInWindow
+
+        let x = rangeMap(position.x, min: 0, max: CGFloat(width), newMin: 0, newMax: originalWidth)
+        let y = originalHeight - rangeMap(position.y, min: 0, max: CGFloat(height), newMin: 0, newMax: originalHeight)
+
+        initialTouchPosition = CGPoint(x: x, y: y)
     }
 
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        initialTouchPosition = touches.first?.location(in: touches.first?.view)
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        initialTouchPosition = nil
-    }
-
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func mouseUp(with event: NSEvent) {
         initialTouchPosition = nil
     }
 
@@ -218,11 +200,11 @@ class RenderViewController: UIViewController {
 
     final func advect(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, source: Slab, destination: Slab) {
         advectShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(velocity.ping, at: 0)
-            commandEncoder.setFragmentTexture(source.ping, at: 1)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(velocity.ping, index: 0)
+            commandEncoder.setFragmentTexture(source.ping, index: 1)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -230,10 +212,10 @@ class RenderViewController: UIViewController {
 
     final func applyForceVector(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, destination: Slab) {
         applyForceVectorShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(destination.ping, at: 0)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(destination.ping, index: 0)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -241,10 +223,10 @@ class RenderViewController: UIViewController {
 
     final func applyForceScalar(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, destination: Slab) {
         applyForceScalarShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(destination.ping, at: 0)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(destination.ping, index: 0)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -252,10 +234,10 @@ class RenderViewController: UIViewController {
 
     final func computeDivergence(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, destination: Slab) {
         divergenceShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(velocity.ping, at: 0)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(velocity.ping, index: 0)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -263,11 +245,11 @@ class RenderViewController: UIViewController {
 
     final func computePressure(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, x: Slab, b: Slab, destination: Slab) {
         jacobiShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(x.ping, at: 0)
-            commandEncoder.setFragmentTexture(b.ping, at: 1)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(x.ping, index: 0)
+            commandEncoder.setFragmentTexture(b.ping, index: 1)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -275,10 +257,10 @@ class RenderViewController: UIViewController {
 
     final func computeVorticity(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, destination: Slab) {
         vorticityShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(velocity.ping, at: 0)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(velocity.ping, index: 0)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -286,11 +268,11 @@ class RenderViewController: UIViewController {
 
     final func computeVorticityConfinement(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, velocity: Slab, vorticity: Slab, destination: Slab) {
         vorticityConfinementShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(velocity.ping, at: 0)
-            commandEncoder.setFragmentTexture(vorticity.ping, at: 1)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(velocity.ping, index: 0)
+            commandEncoder.setFragmentTexture(vorticity.ping, index: 1)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -298,11 +280,11 @@ class RenderViewController: UIViewController {
 
     final func subtractGradient(commandBuffer: MTLCommandBuffer, dataBuffer: MTLBuffer, p: Slab, w: Slab, destination: Slab) {
         gradientShader.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination.pong) { (commandEncoder) in
-            commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-            commandEncoder.setFragmentTexture(p.ping, at: 0)
-            commandEncoder.setFragmentTexture(w.ping, at: 1)
+            commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+            commandEncoder.setFragmentTexture(p.ping, index: 0)
+            commandEncoder.setFragmentTexture(w.ping, index: 1)
 
-            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, at: 0)
+            commandEncoder.setFragmentBuffer(dataBuffer, offset: 0, index: 0)
         }
 
         destination.swap()
@@ -311,13 +293,13 @@ class RenderViewController: UIViewController {
     final func render(commandBuffer: MTLCommandBuffer, destination: MTLTexture) {
         if currentIndex >= 2 {
             renderVector.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination) { (commandEncoder) in
-                commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-                commandEncoder.setFragmentTexture(self.drawSlab().ping, at: 0)
+                commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+                commandEncoder.setFragmentTexture(self.drawSlab().ping, index: 0)
             }
         } else {
             renderScalar.calculateWithCommandBuffer(buffer: commandBuffer, indices: indexData, count: RenderViewController.indices.count, texture: destination) { (commandEncoder) in
-                commandEncoder.setVertexBuffer(self.vertData, offset: 0, at: 0)
-                commandEncoder.setFragmentTexture(self.drawSlab().ping, at: 0)
+                commandEncoder.setVertexBuffer(self.vertData, offset: 0, index: 0)
+                commandEncoder.setFragmentTexture(self.drawSlab().ping, index: 0)
             }
         }
     }
@@ -367,29 +349,28 @@ extension RenderViewController: MTKViewDelegate {
 
         computeDivergence(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, destination: velocityDivergence)
 
-        for _ in 0..<60 {
+        for _ in 0..<40 {
             computePressure(commandBuffer: commandBuffer, dataBuffer: dataBuffer, x: pressure, b: velocityDivergence, destination: pressure)
         }
 
         subtractGradient(commandBuffer: commandBuffer, dataBuffer: dataBuffer, p: pressure, w: velocity, destination: velocity)
-        
-        
+
         if let drawable = view.currentDrawable {
-            
+
             let nextTexture = drawable.texture
             render(commandBuffer: commandBuffer, destination: nextTexture)
-            
+
             commandBuffer.present(drawable)
         }
 
         commandBuffer.commit()
-        
+
         if interactive == true {
             touchDirection = initialTouchPosition
         }
     }
-    
+
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        
+
     }
 }

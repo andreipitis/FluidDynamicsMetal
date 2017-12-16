@@ -12,8 +12,17 @@
 		7594D4381F434ECE00E4AE27 /* RenderShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4371F434ECE00E4AE27 /* RenderShader.swift */; };
 		7594D43A1F4361F300E4AE27 /* Slab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4391F4361F300E4AE27 /* Slab.swift */; };
 		75A202DD1F4818C30089F3A7 /* RenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A202DC1F4818C30089F3A7 /* RenderViewController.swift */; };
+		75D520951FE5539E003525F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D520941FE5539E003525F9 /* AppDelegate.swift */; };
+		75D5209E1FE5539E003525F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75D5209D1FE5539E003525F9 /* Assets.xcassets */; };
+		75D520A11FE5539E003525F9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75D5209F1FE5539E003525F9 /* Main.storyboard */; };
+		75D520A81FE553EA003525F9 /* ComputeShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753C09591F4398C500D67F17 /* ComputeShader.swift */; };
+		75D520A91FE553EA003525F9 /* RenderShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4371F434ECE00E4AE27 /* RenderShader.swift */; };
+		75D520AA1FE553EA003525F9 /* MetalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753C09581F43988D00D67F17 /* MetalDevice.swift */; };
+		75D520AC1FE553EA003525F9 /* Slab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4391F4361F300E4AE27 /* Slab.swift */; };
+		75D520AD1FE553EA003525F9 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F0811F31AE8D00A3EC4A /* Shaders.metal */; };
+		75D520AF1FE55733003525F9 /* RenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D520AE1FE55733003525F9 /* RenderViewController.swift */; };
+		75D520B31FE56855003525F9 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D520B01FE5671E003525F9 /* Math.swift */; };
 		75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */; };
-		75F3F06E1F311D4A00A3EC4A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F06D1F311D4A00A3EC4A /* ViewController.swift */; };
 		75F3F0711F311D4A00A3EC4A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F06F1F311D4A00A3EC4A /* Main.storyboard */; };
 		75F3F0731F311D4A00A3EC4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F0721F311D4A00A3EC4A /* Assets.xcassets */; };
 		75F3F0761F311D4A00A3EC4A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F0741F311D4A00A3EC4A /* LaunchScreen.storyboard */; };
@@ -26,9 +35,16 @@
 		7594D4371F434ECE00E4AE27 /* RenderShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderShader.swift; sourceTree = "<group>"; };
 		7594D4391F4361F300E4AE27 /* Slab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slab.swift; sourceTree = "<group>"; };
 		75A202DC1F4818C30089F3A7 /* RenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderViewController.swift; sourceTree = "<group>"; };
+		75D520921FE5539E003525F9 /* FluidDynamicsMetalOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidDynamicsMetalOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		75D520941FE5539E003525F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		75D5209D1FE5539E003525F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		75D520A01FE5539E003525F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		75D520A21FE5539E003525F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		75D520A31FE5539E003525F9 /* FluidDynamicsMetalOSX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FluidDynamicsMetalOSX.entitlements; sourceTree = "<group>"; };
+		75D520AE1FE55733003525F9 /* RenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderViewController.swift; sourceTree = "<group>"; };
+		75D520B01FE5671E003525F9 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		75F3F0681F311D4A00A3EC4A /* FluidDynamicsMetal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidDynamicsMetal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		75F3F06D1F311D4A00A3EC4A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		75F3F0701F311D4A00A3EC4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		75F3F0721F311D4A00A3EC4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75F3F0751F311D4A00A3EC4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -38,6 +54,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		75D5208F1FE5539E003525F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		75F3F0651F311D4A00A3EC4A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -48,10 +71,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		75D520931FE5539E003525F9 /* FluidDynamicsMetalOSX */ = {
+			isa = PBXGroup;
+			children = (
+				75D520B01FE5671E003525F9 /* Math.swift */,
+				75D520941FE5539E003525F9 /* AppDelegate.swift */,
+				75D520AE1FE55733003525F9 /* RenderViewController.swift */,
+				75D5209D1FE5539E003525F9 /* Assets.xcassets */,
+				75D5209F1FE5539E003525F9 /* Main.storyboard */,
+				75D520A21FE5539E003525F9 /* Info.plist */,
+				75D520A31FE5539E003525F9 /* FluidDynamicsMetalOSX.entitlements */,
+			);
+			path = FluidDynamicsMetalOSX;
+			sourceTree = "<group>";
+		};
+		75D520A71FE553B4003525F9 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				753C09591F4398C500D67F17 /* ComputeShader.swift */,
+				7594D4371F434ECE00E4AE27 /* RenderShader.swift */,
+				753C09581F43988D00D67F17 /* MetalDevice.swift */,
+				7594D4391F4361F300E4AE27 /* Slab.swift */,
+				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		75F3F05F1F311D4A00A3EC4A = {
 			isa = PBXGroup;
 			children = (
-				75F3F06A1F311D4A00A3EC4A /* FluidDynamicsMetal */,
+				75D520A71FE553B4003525F9 /* Shared */,
+				75F3F06A1F311D4A00A3EC4A /* FluidDynamicsMetaliOS */,
+				75D520931FE5539E003525F9 /* FluidDynamicsMetalOSX */,
 				75F3F0691F311D4A00A3EC4A /* Products */,
 				75F3F07D1F311D7800A3EC4A /* Frameworks */,
 			);
@@ -61,27 +112,22 @@
 			isa = PBXGroup;
 			children = (
 				75F3F0681F311D4A00A3EC4A /* FluidDynamicsMetal.app */,
+				75D520921FE5539E003525F9 /* FluidDynamicsMetalOSX.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		75F3F06A1F311D4A00A3EC4A /* FluidDynamicsMetal */ = {
+		75F3F06A1F311D4A00A3EC4A /* FluidDynamicsMetaliOS */ = {
 			isa = PBXGroup;
 			children = (
-				753C09591F4398C500D67F17 /* ComputeShader.swift */,
-				7594D4371F434ECE00E4AE27 /* RenderShader.swift */,
-				753C09581F43988D00D67F17 /* MetalDevice.swift */,
 				75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */,
-				7594D4391F4361F300E4AE27 /* Slab.swift */,
-				75F3F06D1F311D4A00A3EC4A /* ViewController.swift */,
 				75A202DC1F4818C30089F3A7 /* RenderViewController.swift */,
-				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
-				75F3F06F1F311D4A00A3EC4A /* Main.storyboard */,
 				75F3F0721F311D4A00A3EC4A /* Assets.xcassets */,
+				75F3F06F1F311D4A00A3EC4A /* Main.storyboard */,
 				75F3F0741F311D4A00A3EC4A /* LaunchScreen.storyboard */,
 				75F3F0771F311D4A00A3EC4A /* Info.plist */,
 			);
-			path = FluidDynamicsMetal;
+			path = FluidDynamicsMetaliOS;
 			sourceTree = "<group>";
 		};
 		75F3F07D1F311D7800A3EC4A /* Frameworks */ = {
@@ -95,6 +141,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		75D520911FE5539E003525F9 /* FluidDynamicsMetalOSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 75D520A41FE5539E003525F9 /* Build configuration list for PBXNativeTarget "FluidDynamicsMetalOSX" */;
+			buildPhases = (
+				75D5208E1FE5539E003525F9 /* Sources */,
+				75D5208F1FE5539E003525F9 /* Frameworks */,
+				75D520901FE5539E003525F9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FluidDynamicsMetalOSX;
+			productName = FluidDynamicsMetalOSX;
+			productReference = 75D520921FE5539E003525F9 /* FluidDynamicsMetalOSX.app */;
+			productType = "com.apple.product-type.application";
+		};
 		75F3F0671F311D4A00A3EC4A /* FluidDynamicsMetal */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 75F3F07A1F311D4B00A3EC4A /* Build configuration list for PBXNativeTarget "FluidDynamicsMetal" */;
@@ -118,10 +181,14 @@
 		75F3F0601F311D4A00A3EC4A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0900;
+				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Andrei-Sergiu Pițiș";
 				TargetAttributes = {
+					75D520911FE5539E003525F9 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
 					75F3F0671F311D4A00A3EC4A = {
 						CreatedOnToolsVersion = 9.0;
 						LastSwiftMigration = 0900;
@@ -142,11 +209,21 @@
 			projectRoot = "";
 			targets = (
 				75F3F0671F311D4A00A3EC4A /* FluidDynamicsMetal */,
+				75D520911FE5539E003525F9 /* FluidDynamicsMetalOSX */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		75D520901FE5539E003525F9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75D5209E1FE5539E003525F9 /* Assets.xcassets in Resources */,
+				75D520A11FE5539E003525F9 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		75F3F0661F311D4A00A3EC4A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -160,6 +237,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		75D5208E1FE5539E003525F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75D520AA1FE553EA003525F9 /* MetalDevice.swift in Sources */,
+				75D520AD1FE553EA003525F9 /* Shaders.metal in Sources */,
+				75D520A91FE553EA003525F9 /* RenderShader.swift in Sources */,
+				75D520A81FE553EA003525F9 /* ComputeShader.swift in Sources */,
+				75D520AF1FE55733003525F9 /* RenderViewController.swift in Sources */,
+				75D520951FE5539E003525F9 /* AppDelegate.swift in Sources */,
+				75D520AC1FE553EA003525F9 /* Slab.swift in Sources */,
+				75D520B31FE56855003525F9 /* Math.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		75F3F0641F311D4A00A3EC4A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -170,7 +262,6 @@
 				7594D4381F434ECE00E4AE27 /* RenderShader.swift in Sources */,
 				75A202DD1F4818C30089F3A7 /* RenderViewController.swift in Sources */,
 				7594D43A1F4361F300E4AE27 /* Slab.swift in Sources */,
-				75F3F06E1F311D4A00A3EC4A /* ViewController.swift in Sources */,
 				75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -178,6 +269,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		75D5209F1FE5539E003525F9 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				75D520A01FE5539E003525F9 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		75F3F06F1F311D4A00A3EC4A /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -197,6 +296,48 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		75D520A51FE5539E003525F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CODE_SIGN_ENTITLEMENTS = FluidDynamicsMetalOSX/FluidDynamicsMetalOSX.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = SC5NQW88NN;
+				INFOPLIST_FILE = FluidDynamicsMetalOSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_BUNDLE_IDENTIFIER = com.andreisergiupitis.FluidDynamicsMetalOSX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		75D520A61FE5539E003525F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CODE_SIGN_ENTITLEMENTS = FluidDynamicsMetalOSX/FluidDynamicsMetalOSX.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = SC5NQW88NN;
+				INFOPLIST_FILE = FluidDynamicsMetalOSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_BUNDLE_IDENTIFIER = com.andreisergiupitis.FluidDynamicsMetalOSX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
 		75F3F0781F311D4A00A3EC4A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -249,6 +390,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -296,6 +438,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -306,14 +449,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = SC5NQW88NN;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INFOPLIST_FILE = FluidDynamicsMetal/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/FluidDynamicsMetaliOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ro.andreisergiupitis.FluidDynamicsMetal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -323,14 +466,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = SC5NQW88NN;
-				INFOPLIST_FILE = FluidDynamicsMetal/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/FluidDynamicsMetaliOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ro.andreisergiupitis.FluidDynamicsMetal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -338,6 +481,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		75D520A41FE5539E003525F9 /* Build configuration list for PBXNativeTarget "FluidDynamicsMetalOSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				75D520A51FE5539E003525F9 /* Debug */,
+				75D520A61FE5539E003525F9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		75F3F0631F311D4A00A3EC4A /* Build configuration list for PBXProject "FluidDynamicsMetal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

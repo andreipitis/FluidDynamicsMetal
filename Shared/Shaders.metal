@@ -73,7 +73,7 @@ inline float2 bilerpFrag(sampler textureSampler, texture2d<float> texture, float
     return mix(mix(d11, d21, a.x), mix(d12, d22, a.x), a.y);
 }
 
-inline half gauss(half2 p, half r)
+inline half gaussSplat(half2 p, half r)
 {
     return exp(-dot(p, p) / r);
 }
@@ -88,7 +88,7 @@ fragment half2 applyForceVector(VertexOut fragmentIn [[stage_in]], texture2d<flo
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
 
     half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
-    half2 splat = impulse * gauss(coords, 150.0);
+    half2 splat = impulse * gaussSplat(coords, 150.0);
 
     half2 final = splat + color;
     return final;
@@ -104,7 +104,7 @@ fragment half2 applyForceScalar(VertexOut fragmentIn [[stage_in]], texture2d<flo
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
 
     half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
-    half2 splat = impulseScalar * gauss(coords, 150.0);
+    half2 splat = impulseScalar * gaussSplat(coords, 150.0);
 
     half2 final = splat + color;
     return final;
@@ -230,25 +230,6 @@ fragment half2 vorticityConfinement(VertexOut fragmentIn [[stage_in]], texture2d
     float2 gridValue = uv * screenSize;
     if(gridValue.x <= 1 || gridValue.y <= 1 || gridValue.x >= screenSize.x - 1 || gridValue.y >= screenSize.y - 1) {
         result = float2(0.0);
-
-//        float2 texCoord = gridValue;
-//        if(gridValue.x <= 1) {
-//            texCoord.x = gridValue.x + 1;
-//        }
-//
-//        if(gridValue.y <= 1) {
-//            texCoord.y = gridValue.y + 1;
-//        }
-//
-//        if(gridValue.x >= screenSize.x - 1) {
-//            texCoord.x = gridValue.x - 1;
-//        }
-//
-//        if(gridValue.y >= screenSize.y - 1) {
-//            texCoord.y = gridValue.y - 1;
-//        }
-//
-//        result = -velocity.sample(fluid_sampler, texCoord / screenSize).xy;
     }
 
     return half2(result.x, result.y);
@@ -285,126 +266,6 @@ fragment half2 gradient(VertexOut fragmentIn [[stage_in]], texture2d<float, acce
 
     if(gridValue.x <= 1 || gridValue.y <= 1 || gridValue.x >= screenSize.x - 1 || gridValue.y >= screenSize.y - 1) {
         result = float2(0.0);
-//        float2 texCoord = gridValue;
-//        if(gridValue.x <= 1) {
-//            texCoord.x = gridValue.x + 1;
-//        }
-//
-//        if(gridValue.y <= 1) {
-//            texCoord.y = gridValue.y + 1;
-//        }
-//
-//        if(gridValue.x >= screenSize.x - 1) {
-//            texCoord.x = gridValue.x - 1;
-//        }
-//
-//        if(gridValue.y >= screenSize.y - 1) {
-//            texCoord.y = gridValue.y - 1;
-//        }
-//
-//        result = -w.sample(fluid_sampler, texCoord / screenSize).xy;
     }
     return half2(result.x, result.y);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Fluid Dynamics Compute Encoder------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Compute Fluid
-
-struct ComputeBufferData {
-    float2 position;
-    float2 impulse;
-
-    float2 impulseScalar;
-
-    float2 screenSize;
-};
-
-inline float SqDistPointSegment(float2 a, float2 b, float2 c)
-{
-    float2 ab = b - a;
-    float2 ac = c - a;
-    float2 bc = c - b;
-    float e = dot(ac, ab);
-    // handle if c is projected to the outside of the ab
-    if (e <= 0.0f)
-        return dot(ac, ac);
-
-    float f = dot(ab, ab);
-    if (e >= f)
-        return dot(bc, bc);
-
-    // handle if c is projected onto the ab
-    return dot(ac, ac) - e * e / f;
-}
-
-inline float2 bilerp(sampler textureSampler, texture2d<float> texture, float2 p) {
-    float4 ij; // i0, j0, i1, j1
-    ij.xy = floor(p - 0.5) + 0.5;
-    ij.zw = ceil(p + 1.5);//ij.xy + 3.0;
-
-    float4 uv = ij;// / gridSize.xyxy;
-    float2 d11 = texture.sample(textureSampler, uv.xy).xy;
-    float2 d21 = texture.sample(textureSampler, uv.zy).xy;
-    float2 d12 = texture.sample(textureSampler, uv.xw).xy;
-    float2 d22 = texture.sample(textureSampler, uv.zw).xy;
-
-    float2 a = p - ij.xy;
-
-    return mix(mix(d11, d21, a.x), mix(d12, d22, a.x), a.y);
-}
-
-kernel void visualize(texture2d<float, access::sample> velocity [[texture(0)]], texture2d<float, access::sample> advected [[texture(1)]], texture2d<float, access::write> output [[texture(2)]], uint2 gid [[thread_position_in_grid]], constant ComputeBufferData &bufferData [[buffer(0)]]) {
-    float2 gidf = static_cast<float2>(gid);
-
-    constexpr sampler fluid_sampler(coord::pixel, filter::nearest, address::clamp_to_edge);
-    //    constexpr sampler normalized_sampler(filter::nearest, address::clamp_to_edge);
-
-    if (gid.x > output.get_width() - 1 || gid.y > output.get_height() - 1) {
-        return;
-    }
-
-    //Advection
-
-    float2 uv = floor(gidf - 0.5 * 0.5 * velocity.sample(fluid_sampler, gidf).xy);
-
-    float2 color = 0.998 * bilerp(fluid_sampler, advected, uv);
-
-    //External Forces
-    float2 impulse = bufferData.impulse;
-
-    float2 location = bufferData.position;
-    float dist = sqrt(SqDistPointSegment(location, location, gidf));
-    float2 pos = impulse * (1.0f - smoothstep(5.0f, 15.0f, dist));
-
-    //Combination
-    float3 value = float3(pos + color, 0.0);
-
-
-    //Boundary
-    float boundaryVal = 0;
-    if(gid.x <= boundaryVal || gid.y <= boundaryVal || gid.x >= bufferData.screenSize.x - boundaryVal || gid.y >= bufferData.screenSize.y - boundaryVal) {
-        value = float3(0.0);
-    }
-
-    output.write(float4(value.x, value.y, value.z, 1.0), gid);
 }

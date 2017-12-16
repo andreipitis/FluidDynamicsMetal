@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "75F3F0671F311D4A00A3EC4A"
-               BuildableName = "FluidDynamicsMetal.app"
-               BlueprintName = "FluidDynamicsMetal"
+               BuildableName = "FluidDynamicsMetaliOS.app"
+               BlueprintName = "FluidDynamicsMetaliOS"
                ReferencedContainer = "container:FluidDynamicsMetal.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,8 +34,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "75F3F0671F311D4A00A3EC4A"
-            BuildableName = "FluidDynamicsMetal.app"
-            BlueprintName = "FluidDynamicsMetal"
+            BuildableName = "FluidDynamicsMetaliOS.app"
+            BlueprintName = "FluidDynamicsMetaliOS"
             ReferencedContainer = "container:FluidDynamicsMetal.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -58,8 +58,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "75F3F0671F311D4A00A3EC4A"
-            BuildableName = "FluidDynamicsMetal.app"
-            BlueprintName = "FluidDynamicsMetal"
+            BuildableName = "FluidDynamicsMetaliOS.app"
+            BlueprintName = "FluidDynamicsMetaliOS"
             ReferencedContainer = "container:FluidDynamicsMetal.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -77,8 +77,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "75F3F0671F311D4A00A3EC4A"
-            BuildableName = "FluidDynamicsMetal.app"
-            BlueprintName = "FluidDynamicsMetal"
+            BuildableName = "FluidDynamicsMetaliOS.app"
+            BlueprintName = "FluidDynamicsMetaliOS"
             ReferencedContainer = "container:FluidDynamicsMetal.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

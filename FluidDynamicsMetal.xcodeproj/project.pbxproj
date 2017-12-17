@@ -21,7 +21,6 @@
 		75D520AC1FE553EA003525F9 /* Slab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4391F4361F300E4AE27 /* Slab.swift */; };
 		75D520AD1FE553EA003525F9 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F0811F31AE8D00A3EC4A /* Shaders.metal */; };
 		75D520AF1FE55733003525F9 /* RenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D520AE1FE55733003525F9 /* RenderViewController.swift */; };
-		75D520B31FE56855003525F9 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D520B01FE5671E003525F9 /* Math.swift */; };
 		75F3F06C1F311D4A00A3EC4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */; };
 		75F3F0711F311D4A00A3EC4A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F06F1F311D4A00A3EC4A /* Main.storyboard */; };
 		75F3F0731F311D4A00A3EC4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75F3F0721F311D4A00A3EC4A /* Assets.xcassets */; };
@@ -42,7 +41,6 @@
 		75D520A21FE5539E003525F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		75D520A31FE5539E003525F9 /* FluidDynamicsMetalOSX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FluidDynamicsMetalOSX.entitlements; sourceTree = "<group>"; };
 		75D520AE1FE55733003525F9 /* RenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderViewController.swift; sourceTree = "<group>"; };
-		75D520B01FE5671E003525F9 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		75F3F0681F311D4A00A3EC4A /* FluidDynamicsMetaliOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidDynamicsMetaliOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75F3F06B1F311D4A00A3EC4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		75F3F0701F311D4A00A3EC4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -74,7 +72,6 @@
 		75D520931FE5539E003525F9 /* FluidDynamicsMetalOSX */ = {
 			isa = PBXGroup;
 			children = (
-				75D520B01FE5671E003525F9 /* Math.swift */,
 				75D520941FE5539E003525F9 /* AppDelegate.swift */,
 				75D520AE1FE55733003525F9 /* RenderViewController.swift */,
 				75D5209D1FE5539E003525F9 /* Assets.xcassets */,
@@ -248,7 +245,6 @@
 				75D520AF1FE55733003525F9 /* RenderViewController.swift in Sources */,
 				75D520951FE5539E003525F9 /* AppDelegate.swift in Sources */,
 				75D520AC1FE553EA003525F9 /* Slab.swift in Sources */,
-				75D520B31FE56855003525F9 /* Math.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

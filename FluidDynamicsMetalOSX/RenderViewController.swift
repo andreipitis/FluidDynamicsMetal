@@ -95,17 +95,10 @@ class RenderViewController: NSViewController {
 
     var currentIndex = 0
 
-
-    var originalHeight: CGFloat = 0
-    var originalWidth: CGFloat = 0
-
     var interactive: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        originalHeight = CGFloat(height)
-        originalWidth = CGFloat(width)
 
         let currentTime = CACurrentMediaTime()
 
@@ -151,18 +144,11 @@ class RenderViewController: NSViewController {
         touchDirection = CGPoint(x: CGFloat(width / 2), y: CGFloat(height - 50 + 1))
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     override func mouseDragged(with event: NSEvent) {
         interactive = true
         let position = event.locationInWindow
 
-        let x = rangeMap(position.x, min: 0, max: CGFloat(width), newMin: 0, newMax: originalWidth)
-        let y = originalHeight - rangeMap(position.y, min: 0, max: CGFloat(height), newMin: 0, newMax: originalHeight)
-
-        initialTouchPosition = CGPoint(x: x, y: y)
+        initialTouchPosition = CGPoint(x: position.x, y: CGFloat(height) - position.y)
     }
 
     override func mouseUp(with event: NSEvent) {
@@ -371,6 +357,30 @@ extension RenderViewController: MTKViewDelegate {
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        isPaused = true
 
+        velocity = Slab(width: width, height: height, format: .rg16Float, name: "Velocity")
+        density = Slab(width: width, height: height, format: .rg16Float, name: "Density")
+        velocityDivergence = Slab(width: width, height: height, format: .rg16Float, name: "Divergence")
+        velocityVorticity = Slab(width: width, height: height, format: .rg16Float, name: "Vorticity")
+        pressure = Slab(width: width, height: height, format: .rg16Float, name: "Pressure")
+
+        let bufferSize = MemoryLayout<StaticData>.size
+
+        var staticData = StaticData(position: float2(0.0, 0.0), impulse: float2(0.0, 0.0), impulseScalar: float2(0.0, 0.0), offsets: float2(1.0/Float(width), 1.0/Float(height)), screenSize: float2(Float(width), Float(height)))
+
+        uniformsBuffers.removeAll()
+        for _ in 0..<inflightBuffersCount {
+            let buffer = MetalDevice.sharedInstance.device.makeBuffer(bytes: &staticData, length: bufferSize, options: .storageModeShared)!
+
+            uniformsBuffers.append(buffer)
+        }
+
+        if interactive == false {
+            initialTouchPosition = CGPoint(x: CGFloat(width / 2), y: CGFloat(height - 50))
+            touchDirection = CGPoint(x: CGFloat(width / 2), y: CGFloat(height - 50 + 1))
+        }
+
+        isPaused = false
     }
 }

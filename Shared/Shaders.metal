@@ -55,6 +55,8 @@ struct BufferData {
     float2 offsets;
 
     float2 screenSize;
+
+    float inkRadius;
 };
 
 inline float2 bilerpFrag(sampler textureSampler, texture2d<float> texture, float2 p, float2 screenSize) {
@@ -84,11 +86,12 @@ fragment half2 applyForceVector(VertexOut fragmentIn [[stage_in]], texture2d<flo
     half2 impulse = half2(bufferData.impulse);
     half2 location = half2(bufferData.position);
     half2 screenSize = half2(bufferData.screenSize);
+    float radius = bufferData.inkRadius;
 
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
 
     half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
-    half2 splat = impulse * gaussSplat(coords, 150.0);
+    half2 splat = impulse * gaussSplat(coords, radius);
 
     half2 final = splat + color;
     return final;
@@ -100,11 +103,12 @@ fragment half2 applyForceScalar(VertexOut fragmentIn [[stage_in]], texture2d<flo
     half2 impulseScalar = half2(bufferData.impulseScalar);
     half2 location = half2(bufferData.position);
     half2 screenSize = half2(bufferData.screenSize);
+    float radius = bufferData.inkRadius;
 
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
 
     half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
-    half2 splat = impulseScalar * gaussSplat(coords, 150.0);
+    half2 splat = impulseScalar * gaussSplat(coords, radius);
 
     half2 final = splat + color;
     return final;

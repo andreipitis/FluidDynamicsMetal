@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		753C095A1F43995300D67F17 /* ComputeShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753C09591F4398C500D67F17 /* ComputeShader.swift */; };
 		753C095B1F43995300D67F17 /* MetalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753C09581F43988D00D67F17 /* MetalDevice.swift */; };
+		756896A51FEB08A800727447 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756896A41FEB08A800727447 /* Renderer.swift */; };
+		756896A61FEB08A800727447 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756896A41FEB08A800727447 /* Renderer.swift */; };
 		7594D4381F434ECE00E4AE27 /* RenderShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4371F434ECE00E4AE27 /* RenderShader.swift */; };
 		7594D43A1F4361F300E4AE27 /* Slab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7594D4391F4361F300E4AE27 /* Slab.swift */; };
 		75A202DD1F4818C30089F3A7 /* RenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A202DC1F4818C30089F3A7 /* RenderViewController.swift */; };
@@ -31,6 +33,7 @@
 /* Begin PBXFileReference section */
 		753C09581F43988D00D67F17 /* MetalDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalDevice.swift; sourceTree = "<group>"; };
 		753C09591F4398C500D67F17 /* ComputeShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComputeShader.swift; sourceTree = "<group>"; };
+		756896A41FEB08A800727447 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		7594D4371F434ECE00E4AE27 /* RenderShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderShader.swift; sourceTree = "<group>"; };
 		7594D4391F4361F300E4AE27 /* Slab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slab.swift; sourceTree = "<group>"; };
 		75A202DC1F4818C30089F3A7 /* RenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderViewController.swift; sourceTree = "<group>"; };
@@ -89,6 +92,7 @@
 				7594D4371F434ECE00E4AE27 /* RenderShader.swift */,
 				753C09581F43988D00D67F17 /* MetalDevice.swift */,
 				7594D4391F4361F300E4AE27 /* Slab.swift */,
+				756896A41FEB08A800727447 /* Renderer.swift */,
 				75F3F0811F31AE8D00A3EC4A /* Shaders.metal */,
 			);
 			path = Shared;
@@ -238,6 +242,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				756896A61FEB08A800727447 /* Renderer.swift in Sources */,
 				75D520AA1FE553EA003525F9 /* MetalDevice.swift in Sources */,
 				75D520AD1FE553EA003525F9 /* Shaders.metal in Sources */,
 				75D520A91FE553EA003525F9 /* RenderShader.swift in Sources */,
@@ -252,6 +257,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				756896A51FEB08A800727447 /* Renderer.swift in Sources */,
 				753C095A1F43995300D67F17 /* ComputeShader.swift in Sources */,
 				753C095B1F43995300D67F17 /* MetalDevice.swift in Sources */,
 				75F3F0821F31AE8D00A3EC4A /* Shaders.metal in Sources */,

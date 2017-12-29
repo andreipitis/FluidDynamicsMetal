@@ -8,9 +8,20 @@
 
 import MetalKit
 
+typealias FloatTuple = (float2, float2, float2, float2, float2)
+
+func / (rhs: FloatTuple, lhs: Float) -> FloatTuple {
+    return FloatTuple(rhs.0 / lhs, rhs.1 / lhs, rhs.2 / lhs, rhs.3 / lhs, rhs.4 / lhs)
+}
+
+func - (rhs: FloatTuple, lhs: FloatTuple) -> FloatTuple {
+    return FloatTuple(rhs.0 - lhs.0, rhs.1 - lhs.1, rhs.2 - lhs.2, rhs.3 - lhs.3, rhs.4 - lhs.4)
+}
+
 struct StaticData {
-    var position: float2
-    var impulse: float2
+    var positions: FloatTuple
+    var impulses: FloatTuple
+
     var impulseScalar: float2
     var offsets: float2
     
@@ -57,8 +68,8 @@ class Renderer: NSObject {
     private let renderScalar: RenderShader = RenderShader(fragmentShader: "visualizeScalar", vertexShader: "vertexShader")
 
     //Touch or Mouse positions
-    private var position: CGPoint?
-    private var direction: CGPoint?
+    private var positions: FloatTuple?
+    private var directions: FloatTuple?
 
     //Surfaces
     private var velocity: Slab!
@@ -90,8 +101,8 @@ class Renderer: NSObject {
         currentIndex = (currentIndex + 1) % 4
     }
 
-    func updateInteraction(point: CGPoint?, in view: MTKView) {
-        position = point
+    func updateInteraction(points: FloatTuple?, in view: MTKView) {
+        positions = points
     }
 
     private final func initSurfaces(width: Int, height: Int) {
@@ -105,9 +116,9 @@ class Renderer: NSObject {
     private final func initBuffers(width: Int, height: Int) {
         let bufferSize = MemoryLayout<StaticData>.stride
 
-        var staticData = StaticData(position: float2(0.0, 0.0),
-                                    impulse: float2(0.0, 0.0),
-                                    impulseScalar: float2(0.0, 0.0),
+        var staticData = StaticData(positions: (float2(), float2(), float2(), float2(), float2()),
+                                    impulses: (float2(), float2(), float2(), float2(), float2()),
+                                    impulseScalar: float2(),
                                     offsets: float2(1.0/Float(width), 1.0/Float(height)),
                                     screenSize: float2(Float(width), Float(height)),
                                     inkRadius: 150 / Renderer.ScreenScaleAdjustment)
@@ -120,18 +131,17 @@ class Renderer: NSObject {
         }
     }
 
-    private final func nextBuffer(position: CGPoint, direction: CGPoint) -> MTLBuffer {
+    private final func nextBuffer(positions: FloatTuple?, directions: FloatTuple?) -> MTLBuffer {
         let buffer = uniformsBuffers[avaliableBufferIndex]
 
         let bufferData = buffer.contents().bindMemory(to: StaticData.self, capacity: 1)
 
-        let pos = float2(x: Float(position.x) / Renderer.ScreenScaleAdjustment , y: Float(position.y) / Renderer.ScreenScaleAdjustment)
-        let impulse = float2(x: Float(position.x - direction.x) / Renderer.ScreenScaleAdjustment, y: Float(position.y - direction.y)  / Renderer.ScreenScaleAdjustment)
+        if let positions = positions, let directions = directions {
+            let alteredPositions = positions / Renderer.ScreenScaleAdjustment
+            let impulses = (positions - directions) / Renderer.ScreenScaleAdjustment
 
-        if pos.x.isNaN == false && pos.y.isNaN == false && impulse.x.isNaN == false && impulse.y.isNaN == false {
-
-            bufferData.pointee.position = pos
-            bufferData.pointee.impulse = impulse
+            bufferData.pointee.positions = alteredPositions
+            bufferData.pointee.impulses = impulses
             bufferData.pointee.impulseScalar = float2(0.8, 0.0)
         }
 
@@ -267,7 +277,7 @@ extension Renderer: MTKViewDelegate {
         semaphore.wait()
         let commandBuffer = MetalDevice.sharedInstance.newCommandBuffer()
 
-        let dataBuffer = nextBuffer(position: position ?? .zero, direction: direction ?? .zero)
+        let dataBuffer = nextBuffer(positions: positions, directions: directions)
 
         commandBuffer.addCompletedHandler({ (commandBuffer) in
             self.semaphore.signal()
@@ -276,7 +286,7 @@ extension Renderer: MTKViewDelegate {
         advect(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, source: velocity, destination: velocity)
         advect(commandBuffer: commandBuffer, dataBuffer: dataBuffer, velocity: velocity, source: density, destination: density)
 
-        if let _ = position, let _ = direction {
+        if let _ = positions, let _ = directions {
             applyForceVector(commandBuffer: commandBuffer, dataBuffer: dataBuffer, destination: velocity)
             applyForceScalar(commandBuffer: commandBuffer, dataBuffer: dataBuffer, destination: density)
         }
@@ -302,7 +312,7 @@ extension Renderer: MTKViewDelegate {
 
         commandBuffer.commit()
 
-        direction = position
+        directions = positions
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {

@@ -40,7 +40,7 @@ class ComputeShader {
     }
 
     private func configurePipeline() {
-        if pipelineState.computeShader.characters.count > 0 {
+        if pipelineState.computeShader.count > 0 {
             if computePipelineState != nil {
                 return
             }

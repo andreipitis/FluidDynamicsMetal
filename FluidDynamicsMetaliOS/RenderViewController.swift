@@ -24,6 +24,8 @@ class RenderViewController: UIViewController {
         renderer = Renderer(metalView: metalView)
         metalView.delegate = renderer
 
+        metalView.isExclusiveTouch = true
+
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(doubleTap))
         doubleTapGesture.numberOfTapsRequired = 2
         doubleTapGesture.numberOfTouchesRequired = 1
@@ -53,21 +55,45 @@ class RenderViewController: UIViewController {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let position = touches.first?.location(in: touches.first?.view)
-        renderer.updateInteraction(point: position, in: metalView)
+        let positions = touches.map { (touch) -> float2 in
+            let position = touch.location(in: touch.view)
+            return float2(Float(position.x), Float(position.y))
+        }
+
+        let tupleSize = MemoryLayout<FloatTuple>.size
+        let arraySize = MemoryLayout<float2>.size * positions.count
+
+        let tuple = malloc(tupleSize).assumingMemoryBound(to: FloatTuple.self)
+
+        memset(tuple, 0, tupleSize)
+        memcpy(tuple, positions, arraySize)
+
+        renderer.updateInteraction(points: tuple.pointee, in: metalView)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let position = touches.first?.location(in: touches.first?.view)
-        renderer.updateInteraction(point: position, in: metalView)
+        let positions = touches.map { (touch) -> float2 in
+            let position = touch.location(in: touch.view)
+            return float2(Float(position.x), Float(position.y))
+        }
+
+        let tupleSize = MemoryLayout<FloatTuple>.size
+        let arraySize = MemoryLayout<float2>.size * positions.count
+
+        let tuple = malloc(tupleSize).assumingMemoryBound(to: FloatTuple.self)
+
+        memset(tuple, 0, tupleSize)
+        memcpy(tuple, positions, arraySize)
+
+        renderer.updateInteraction(points: tuple.pointee, in: metalView)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        renderer.updateInteraction(point: nil, in: metalView)
+        renderer.updateInteraction(points: nil, in: metalView)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        renderer.updateInteraction(point: nil, in: metalView)
+        renderer.updateInteraction(points: nil, in: metalView)
     }
 
     @objc func changeSource() {

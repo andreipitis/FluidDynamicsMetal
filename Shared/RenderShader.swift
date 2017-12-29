@@ -83,7 +83,7 @@ class RenderShader {
     }
     
     private func configurePipeline() {
-        if pipelineState.vertexShader.characters.count > 0 && pipelineState.fragmentShader.characters.count > 0 {
+        if pipelineState.vertexShader.count > 0 && pipelineState.fragmentShader.count > 0 {
             if renderPipelineState != nil {
                 return
             }

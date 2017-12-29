@@ -34,19 +34,23 @@ class RenderViewController: NSViewController {
     }
 
     override func mouseDown(with event: NSEvent) {
-        let position = event.locationInWindow
+        let point = event.locationInWindow
 
-        renderer.updateInteraction(point: CGPoint(x: position.x, y: metalView.bounds.height - position.y), in: metalView)
+        let position = float2(Float(point.x), Float(metalView.bounds.height - point.y))
+        let tuple = FloatTuple(position, float2(), float2(), float2(), float2())
+        renderer.updateInteraction(points: tuple, in: metalView)
     }
 
     override func mouseDragged(with event: NSEvent) {
-        let position = event.locationInWindow
+        let point = event.locationInWindow
 
-        renderer.updateInteraction(point: CGPoint(x: position.x, y: metalView.bounds.height - position.y), in: metalView)
+        let position = float2(Float(point.x), Float(metalView.bounds.height - point.y))
+        let tuple = FloatTuple(position, float2(), float2(), float2(), float2())
+        renderer.updateInteraction(points: tuple, in: metalView)
     }
 
     override func mouseUp(with event: NSEvent) {
-        renderer.updateInteraction(point: nil, in: metalView)
+        renderer.updateInteraction(points: nil, in: metalView)
     }
 
     override func keyDown(with event: NSEvent) {

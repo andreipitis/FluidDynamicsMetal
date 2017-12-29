@@ -48,8 +48,8 @@ fragment half4 visualizeVector(VertexOut fragmentIn [[stage_in]], texture2d<floa
 //Fluid Dynamics Render Encoder
 
 struct BufferData {
-    float2 position;
-    float2 impulse;
+    float2 positions[5];
+    float2 impulses[5];
 
     float2 impulseScalar;
     float2 offsets;
@@ -83,17 +83,25 @@ inline half gaussSplat(half2 p, half r)
 fragment half2 applyForceVector(VertexOut fragmentIn [[stage_in]], texture2d<float, access::sample> input [[texture(0)]], constant BufferData &bufferData [[buffer(0)]]) {
     constexpr sampler fluid_sampler(filter::nearest);
 
-    half2 impulse = half2(bufferData.impulse);
-    half2 location = half2(bufferData.position);
     half2 screenSize = half2(bufferData.screenSize);
     float radius = bufferData.inkRadius;
 
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
+    half2 final = color;
 
-    half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
-    half2 splat = impulse * gaussSplat(coords, radius);
+    for (int i=0; i<5; ++i) {
+        half2 impulse = half2(bufferData.impulses[i]);
+        half2 location = half2(bufferData.positions[i]);
 
-    half2 final = splat + color;
+        if (location.x == location.y && location.x == 0) {
+            continue;
+        }
+
+        half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
+        half2 splat = impulse * gaussSplat(coords, radius);
+
+        final = final + splat;
+    }
     return final;
 }
 
@@ -101,16 +109,24 @@ fragment half2 applyForceScalar(VertexOut fragmentIn [[stage_in]], texture2d<flo
     constexpr sampler fluid_sampler(filter::nearest);
 
     half2 impulseScalar = half2(bufferData.impulseScalar);
-    half2 location = half2(bufferData.position);
     half2 screenSize = half2(bufferData.screenSize);
     float radius = bufferData.inkRadius;
 
     half2 color = half2(input.sample(fluid_sampler, fragmentIn.textureCoorinates).xy);
+    half2 final = color;
 
-    half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
-    half2 splat = impulseScalar * gaussSplat(coords, radius);
+    for (int i=0; i<5; ++i) {
+        half2 location = half2(bufferData.positions[i]);
 
-    half2 final = splat + color;
+        if (location.x == location.y && location.x == 0) {
+            continue;
+        }
+
+        half2 coords = location - half2(fragmentIn.textureCoorinates).xy * screenSize;
+        half2 splat = impulseScalar * gaussSplat(coords, radius);
+
+        final = final + splat;
+    }
     return final;
 }
 

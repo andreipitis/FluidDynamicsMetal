@@ -19,7 +19,6 @@ class Slab {
         textureDescriptor.usage = MTLTextureUsage(rawValue: MTLTextureUsage.shaderRead.rawValue | MTLTextureUsage.renderTarget.rawValue)
         textureDescriptor.width = width
         textureDescriptor.height = height
-        textureDescriptor.storageMode = .private
 
         ping = MetalDevice.createTexture(descriptor: textureDescriptor)
         pong = MetalDevice.createTexture(descriptor: textureDescriptor)
